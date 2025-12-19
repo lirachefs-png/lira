@@ -10,6 +10,7 @@ if (!token) {
 
 export const duffel = new Duffel({
     token: token || "mock_token_for_build",
+    // Note: This SDK version defaults to API v2 (Production). No 'beta' flag needed.
 });
 
 export async function createBooking(offerId: string, passengerDetails?: any, serviceIds: string[] = []) {
