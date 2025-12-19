@@ -19,14 +19,14 @@ export async function createBooking(offerId: string, passengerDetails?: any, ser
 
         // 2. Map passengers using Real Data if provided, else Mock.
         const passengers = offer.data.passengers.map((p) => ({
-            id: p.id,
-            given_name: passengerDetails?.firstName || "Jane",
-            family_name: passengerDetails?.lastName || "Doe",
-            born_on: passengerDetails?.dob || "1990-01-01",
+            id: p.id, // Critical: Must match the Offer's passenger ID
+            given_name: passengerDetails?.firstName,
+            family_name: passengerDetails?.lastName,
+            born_on: passengerDetails?.dob,
             title: passengerDetails?.gender === 'm' ? "mr" : "ms",
-            gender: passengerDetails?.gender || "f",
-            email: passengerDetails?.email || "jane.doe@example.com",
-            phone_number: passengerDetails?.phone || "+15550109999" // E.164 format
+            gender: passengerDetails?.gender || "m",
+            email: passengerDetails?.email,
+            phone_number: passengerDetails?.phone || "+15550109999" // Duffel requires E.164
         }));
 
         // Structure services

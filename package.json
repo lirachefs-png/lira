@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@duffel/api": "^4.21.0",
+    "@duffel/api": "^4.21.1",
     "@react-email/components": "^1.0.1",
     "@stripe/react-stripe-js": "^5.4.1",
     "@stripe/stripe-js": "^8.6.0",
