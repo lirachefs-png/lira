@@ -40,9 +40,17 @@ export async function GET(request: Request) {
 
         return NextResponse.json({ data: offerRequest.data.offers });
     } catch (error: any) {
-        console.error('Duffel API Error:', error);
+        console.error('❌ Duffel API Error:', JSON.stringify(error, null, 2));
+
+        // Debug Token (Safe Log)
+        const token = process.env.DUFFEL_ACCESS_TOKEN;
+        console.log('🔑 Token Check:', token ? `Exists (Starts with ${token.substring(0, 5)}...)` : 'MISSING');
+
+        // Extract Duffel Message
+        const errorMessage = error.errors?.[0]?.message || error.message || 'Failed to fetch flights';
+
         return NextResponse.json(
-            { error: error.message || 'Failed to fetch flights' },
+            { error: errorMessage },
             { status: 500 }
         );
     }
