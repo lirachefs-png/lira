@@ -1,7 +1,15 @@
 import { Duffel } from '@duffel/api';
 
+const token = process.env.DUFFEL_ACCESS_TOKEN;
+// Debug initialization to catch Vercel env var issues
+if (!token) {
+    console.error("❌ CRITICAL: DUFFEL_ACCESS_TOKEN is missing in environment variables!");
+} else {
+    console.log(`✅ Duffel Client Initialized with token starting: ${token.substring(0, 5)}...`);
+}
+
 export const duffel = new Duffel({
-    token: process.env.DUFFEL_ACCESS_TOKEN || "mock_token_for_build",
+    token: token || "mock_token_for_build",
 });
 
 export async function createBooking(offerId: string, passengerDetails?: any, serviceIds: string[] = []) {
