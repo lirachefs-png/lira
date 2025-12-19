@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2024-12-18.acacia' as any, // Using latest or casting to any to avoid TS issues with older types
-});
-
 export async function POST(request: Request) {
     try {
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+            apiVersion: '2024-12-18.acacia' as any,
+        });
+
         const { amount, currency } = await request.json();
 
         // Create a PaymentIntent with the order amount and currency

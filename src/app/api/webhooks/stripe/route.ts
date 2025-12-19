@@ -8,13 +8,13 @@ import { createBooking, updateBooking } from "@/lib/bookingStore";
 
 export const runtime = "nodejs";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2024-12-18.acacia' as any,
-});
-
-const resend = new Resend(process.env.RESEND_API_KEY || 're_123');
-
 export async function POST(req: Request) {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+        apiVersion: '2024-12-18.acacia' as any,
+    });
+
+    const resend = new Resend(process.env.RESEND_API_KEY || 're_123');
+
     const headerPayload = await headers();
     const sig = headerPayload.get("stripe-signature");
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;

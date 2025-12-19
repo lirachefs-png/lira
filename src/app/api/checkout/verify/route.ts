@@ -5,9 +5,9 @@ import { createBooking, updateBooking } from "@/lib/bookingStore";
 
 export const runtime = "nodejs";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
 export async function GET(request: Request) {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get('session_id');
 
