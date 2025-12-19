@@ -49,8 +49,14 @@ export async function GET(request: Request) {
         }
 
         return NextResponse.json({ data: combined });
-    } catch (error) {
-        console.error('Duffel Autocomplete Error, using fallback only:', error);
+        return NextResponse.json({ data: combined });
+    } catch (error: any) {
+        console.error('❌ Duffel Autocomplete Error:', JSON.stringify(error, null, 2));
+
+        // Debug Token
+        const token = process.env.DUFFEL_ACCESS_TOKEN;
+        console.log('🔑 Token Check (Locations):', token ? `Exists (${token.substring(0, 5)}...)` : 'MISSING');
+
         return NextResponse.json({ data: staticResults });
     }
 }
