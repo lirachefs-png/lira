@@ -37,18 +37,18 @@ export async function GET(request: Request) {
             country_name: place.country?.name
         }));
 
-        // Combine: Static first, then API (deduplicated by IATA)
-        const combined = [...staticResults];
-        const seen = new Set(staticResults.map(r => r.iata_code));
+        // Combine: Puts API results FIRST, then Fallbacks if not present
+        const combined = [...apiResults];
+        const seen = new Set(apiResults.map((r: any) => r.iata_code));
 
-        for (const item of apiResults) {
+        for (const item of staticResults) {
             if (!seen.has(item.iata_code)) {
                 combined.push(item);
                 seen.add(item.iata_code);
             }
         }
 
-        return NextResponse.json({ data: combined });
+        console.log(`✅ Found ${apiResults.length} locations from Duffel + ${combined.length - apiResults.length} from fallback`);
         return NextResponse.json({ data: combined });
     } catch (error: any) {
         console.error('❌ Duffel Autocomplete Error:', JSON.stringify(error, null, 2));
