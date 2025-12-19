@@ -13,15 +13,16 @@ export async function POST(request: Request) {
         const offer = await duffel.offers.get(offerId);
 
         // 2. Map form data to Duffel Passenger Input
+        // 2. Map form data to Duffel Passenger Input
         const passengers = offer.data.passengers.map((offerPassenger: any) => ({
             id: offerPassenger.id,
-            given_name: passengerDetails?.given_name || 'Jane',
-            family_name: passengerDetails?.family_name || 'Doe',
-            gender: 'f' as any, // Mock for MVP
-            title: 'ms' as any, // Mock for MVP
-            born_on: '1990-01-01', // Mock for MVP
-            email: passengerDetails?.email || 'jane@example.com',
-            phone_number: '+15555555555'
+            given_name: passengerDetails.firstName,
+            family_name: passengerDetails.lastName,
+            gender: passengerDetails.gender,
+            title: (passengerDetails.gender === 'm' ? 'mr' : 'ms') as any,
+            born_on: passengerDetails.dob,
+            email: passengerDetails.email,
+            phone_number: passengerDetails.phone || '+5511999999999' // Fallback for testing if empty
         }));
 
         // 3. Create Order

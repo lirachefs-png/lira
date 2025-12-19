@@ -9,6 +9,9 @@ export async function GET(request: Request) {
     const returnDate = searchParams.get('returnDate');
     const cabin = searchParams.get('cabin') || 'economy';
     const adults = parseInt(searchParams.get('adults') || '1');
+    const maxConnections = searchParams.get('max_connections') ? parseInt(searchParams.get('max_connections')!) : undefined;
+    const fareType = searchParams.get('fare_type'); // e.g., "student"
+    const privateFaresStr = searchParams.get('private_fares'); // JSON string for corporate codes
 
     if (!origin || !destination || !departureDate) {
         return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
@@ -31,11 +34,27 @@ export async function GET(request: Request) {
             });
         }
 
+        // Parse private fares if provided
+        let privateFares: Record<string, any[]> | undefined;
+        if (privateFaresStr) {
+            try {
+                privateFares = JSON.parse(privateFaresStr);
+            } catch (e) {
+                console.error('Invalid private_fares JSON:', e);
+            }
+        }
+
         const offerRequest = await duffel.offerRequests.create({
             slices: slices,
-            passengers: Array(adults).fill({ type: 'adult' }),
+            passengers: Array(adults).fill({
+                type: 'adult',
+                ...(fareType && { fare_type: fareType })
+            }),
             cabin_class: cabin as any,
             return_offers: true,
+            supplier_timeout: parseInt(searchParams.get('supplier_timeout') || '8000'), // Default 8s for Vercel safety, but overridable
+            ...(maxConnections !== undefined && { max_connections: maxConnections as any }),
+            ...(privateFares && { private_fares: privateFares }),
         });
 
         return NextResponse.json({ data: offerRequest.data.offers });

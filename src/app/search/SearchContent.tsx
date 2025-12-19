@@ -41,6 +41,12 @@ export default function SearchContent() {
                 const params: Record<string, string> = { origin, destination, date, adults: '1' };
                 if (returnDate) params.returnDate = returnDate;
 
+                // Advanced Params (Private Fares, etc.)
+                const fareType = searchParams.get('fare_type');
+                const privateFares = searchParams.get('private_fares');
+                if (fareType) params.fare_type = fareType;
+                if (privateFares) params.private_fares = privateFares;
+
                 const query = new URLSearchParams(params);
                 const res = await fetch(`/api/search?${query.toString()}`);
                 const data = await res.json();
