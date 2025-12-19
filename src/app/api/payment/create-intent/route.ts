@@ -3,9 +3,7 @@ import Stripe from 'stripe';
 
 export async function POST(request: Request) {
     try {
-        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-            apiVersion: '2024-12-18.acacia' as any,
-        });
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
         const { amount, currency } = await request.json();
 

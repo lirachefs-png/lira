@@ -16,16 +16,7 @@ export default function Header() {
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
-    // Auth Modal State
-    const [showLoginModal, setShowLoginModal] = useState(false);
-    const [isSignUp, setIsSignUp] = useState(false);
-    const [isForgotPassword, setIsForgotPassword] = useState(false);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
-
+    // Auth Modal State - REMOVED (Moved to dedicated pages)
     const { language, currency, setLanguage, setCurrency, labels } = useRegion();
     const [showRegionMenu, setShowRegionMenu] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -53,58 +44,6 @@ export default function Header() {
             subscription.unsubscribe();
         };
     }, []);
-
-    const handleResetPassword = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: `${location.origin}/auth/callback?next=/auth/update-password`,
-            });
-            if (error) throw error;
-            alert("Verifique seu e-mail! Enviamos um link para você redefinir sua senha.");
-            setIsForgotPassword(false);
-            setShowLoginModal(false);
-        } catch (error: any) {
-            alert(error.message || "Erro ao enviar e-mail de recuperação.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleAuth = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        try {
-            if (isSignUp) {
-                if (password !== confirmPassword) {
-                    alert("As senhas não coincidem!");
-                    setLoading(false);
-                    return;
-                }
-                const { error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                });
-                if (error) throw error;
-                alert("Cadastro realizado! Verifique seu e-mail para confirmar a conta antes de entrar.");
-                setIsSignUp(false); // Switch to login view
-            } else {
-                const { error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password,
-                });
-                if (error) throw error;
-                // Login successful, modal closes via auth state change or manual close
-                setShowLoginModal(false);
-            }
-        } catch (error: any) {
-            alert(error.message || "Erro na autenticação. Tente novamente.");
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
@@ -180,12 +119,12 @@ export default function Header() {
                                 </div>
                             </Link>
                         ) : (
-                            <button
-                                onClick={() => setShowLoginModal(true)}
+                            <Link
+                                href="/auth/signin"
                                 className={`hidden md:flex items-center gap-2 border px-4 py-2 rounded-full shadow-sm transition-all cursor-pointer group ${scrolled ? 'bg-slate-100 dark:bg-white/10 border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/20' : 'bg-black/5 dark:bg-black/40 border-white/20 dark:border-white/10 hover:bg-black/10 dark:hover:bg-black/60 backdrop-blur-md'}`}>
                                 <User className="w-4 h-4 text-slate-700 dark:text-white" />
                                 <span className="text-sm font-bold text-slate-700 dark:text-gray-200 group-hover:text-slate-900 dark:group-hover:text-white">{labels.login}</span>
-                            </button>
+                            </Link>
                         )}
 
                         {/* Theme Toggle */}
@@ -286,12 +225,13 @@ export default function Header() {
 
                             <div className="flex flex-col gap-4">
                                 {!user ? (
-                                    <button
-                                        onClick={() => { setMobileMenuOpen(false); setShowLoginModal(true); }}
-                                        className="w-full py-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black font-bold"
+                                    <Link
+                                        href="/auth/signin"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="w-full py-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black font-bold text-center"
                                     >
                                         {labels.login}
-                                    </button>
+                                    </Link>
                                 ) : (
                                     <button
                                         onClick={() => { setMobileMenuOpen(false); handleLogout(); }}
@@ -299,142 +239,6 @@ export default function Header() {
                                     >
                                         Sair
                                     </button>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
-
-            {/* Login Modal */}
-            {
-                showLoginModal && (
-                    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                        <div className="bg-[#151926] border border-white/10 p-8 rounded-2xl w-full max-w-sm relative shadow-2xl">
-                            <button
-                                onClick={() => setShowLoginModal(false)}
-                                className="absolute top-4 right-4 text-gray-400 hover:text-white"
-                            >
-                                ✕
-                            </button>
-                            <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent mb-2">
-                                {isForgotPassword ? "Recuperar Senha" : (isSignUp ? "Criar Conta" : "Bem-vindo")}
-                            </h2>
-                            <p className="text-gray-400 text-sm mb-6">
-                                {isForgotPassword
-                                    ? "Digite seu e-mail para receber um link de redefinição."
-                                    : (isSignUp ? "Preencha seus dados para começar." : "Entre para gerenciar suas viagens.")}
-                            </p>
-
-                            {isForgotPassword ? (
-                                <form onSubmit={handleResetPassword} className="space-y-4">
-                                    <div>
-                                        <input
-                                            type="email"
-                                            placeholder="seu@email.com"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-rose-500 transition-colors"
-                                            required
-                                        />
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        disabled={loading}
-                                        className="w-full bg-gradient-to-r from-[#ff0080] via-[#ff4d00] to-[#ffb700] text-white font-bold py-3 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
-                                    >
-                                        {loading ? "Enviando..." : "Enviar Link de Recuperação"}
-                                    </button>
-                                    <div className="text-center">
-                                        <button
-                                            type="button"
-                                            onClick={() => setIsForgotPassword(false)}
-                                            className="text-gray-400 hover:text-white text-sm"
-                                        >
-                                            Voltar para Login
-                                        </button>
-                                    </div>
-                                </form>
-                            ) : (
-                                <form onSubmit={handleAuth} className="space-y-4">
-                                    <div>
-                                        <input
-                                            type="email"
-                                            placeholder="seu@email.com"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-rose-500 transition-colors"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="relative">
-                                        <input
-                                            type={showPassword ? "text" : "password"}
-                                            placeholder="Sua senha"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-rose-500 transition-colors pr-12"
-                                            required
-                                            minLength={6}
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
-                                        >
-                                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                                        </button>
-                                    </div>
-
-                                    {isSignUp && (
-                                        <div className="relative">
-                                            <input
-                                                type={showPassword ? "text" : "password"}
-                                                placeholder="Confirmar senha"
-                                                value={confirmPassword}
-                                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                                className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-rose-500 transition-colors pr-12"
-                                                required
-                                                minLength={6}
-                                            />
-                                        </div>
-                                    )}
-
-                                    <div className="flex items-center justify-between">
-                                        {!isSignUp && (
-                                            <button
-                                                type="button"
-                                                onClick={() => setIsForgotPassword(true)}
-                                                className="text-xs text-rose-400 hover:text-rose-300 transition-colors"
-                                            >
-                                                Esqueci minha senha
-                                            </button>
-                                        )}
-                                    </div>
-
-                                    <button
-                                        type="submit"
-                                        disabled={loading}
-                                        className="w-full bg-gradient-to-r from-[#ff0080] via-[#ff4d00] to-[#ffb700] text-white font-bold py-3 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
-                                    >
-                                        {loading ? "Processando..." : (isSignUp ? "Cadastrar" : "Entrar")}
-                                    </button>
-                                </form>
-                            )}
-
-                            <div className="mt-4 text-center">
-                                {!isForgotPassword && (
-                                    <>
-                                        <span className="text-gray-400 text-sm">
-                                            {isSignUp ? "Já tem conta? " : "Não tem conta? "}
-                                        </span>
-                                        <button
-                                            onClick={() => setIsSignUp(!isSignUp)}
-                                            className="text-white font-bold hover:underline text-sm"
-                                        >
-                                            {isSignUp ? "Entrar" : "Cadastrar"}
-                                        </button>
-                                    </>
                                 )}
                             </div>
                         </div>

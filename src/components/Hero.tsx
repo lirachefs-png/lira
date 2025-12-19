@@ -8,9 +8,11 @@ import { getUnsplashImage } from '@/lib/unsplash';
 import { format } from 'date-fns';
 import LocationSearch from './ui/LocationSearch';
 import DatePicker from './ui/DatePicker';
+import { useRegion } from '@/contexts/RegionContext';
 
 export default function Hero() {
     const router = useRouter();
+    const { labels } = useRegion();
     const [loading, setLoading] = useState(false);
     const [origin, setOrigin] = useState('');
     const [destination, setDestination] = useState('');
@@ -25,7 +27,10 @@ export default function Hero() {
     }, []);
 
     const handleSearch = () => {
-        if (!origin || !destination || !date) return;
+        if (!origin || !destination || !date) {
+            alert('Por favor, selecione origem, destino e data.');
+            return;
+        }
         setLoading(true);
 
         const params = new URLSearchParams({
@@ -41,11 +46,12 @@ export default function Hero() {
         router.push(`/search?${params.toString()}`);
     };
 
+    const PARTNERS = ['LA', 'AD', 'G3', 'TP', 'AA', 'UA', 'AF']; // Latam, Azul, Gol, TAP, AA, United, AirFrance
+
     return (
-        <div className="relative z-50 pt-32 pb-32 sm:pt-40 sm:pb-40 bg-background transition-colors duration-500">
+        <div className="relative z-50 pt-32 pb-32 sm:pt-40 sm:pb-40 bg-background transition-colors duration-500 overflow-hidden">
 
-            {/* Background Wrapper with Overflow Hidden to prevent clip but allow dropdowns */}
-
+            {/* Background Wrapper */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 {/* Dynamic Background Image */}
                 {bgImage && (
@@ -58,7 +64,7 @@ export default function Hero() {
                     />
                 )}
 
-                {/* Theme-Aware Gradient Overlay - Reduced Opacity for clearer image */}
+                {/* Theme-Aware Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-white/10 to-white dark:from-black/30 dark:via-black/10 dark:to-black z-0 transition-colors duration-500"></div>
 
                 {/* Animated Background Gradients */}
@@ -80,14 +86,6 @@ export default function Hero() {
                     transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
                     className="absolute top-[10%] right-[-10%] w-[600px] h-[600px] bg-rose-600/20 rounded-full blur-[100px]"
                 />
-                <motion.div
-                    animate={{
-                        scale: [1, 1.5, 1],
-                        opacity: [0.3, 0.4, 0.3]
-                    }}
-                    transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute bottom-[-10%] left-[20%] w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[100px]"
-                />
             </div>
 
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center z-10">
@@ -103,7 +101,7 @@ export default function Hero() {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ff0080] opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-[#ff0080]"></span>
                     </span>
-                    <span className="text-xs font-medium text-slate-700 dark:text-white tracking-wide">Now searching 728+ airlines</span>
+                    <span className="text-xs font-medium text-slate-700 dark:text-white tracking-wide">{labels.hero.badge}</span>
                 </motion.div>
 
                 {/* Main Headlines */}
@@ -113,7 +111,7 @@ export default function Hero() {
                     transition={{ delay: 0.4 }}
                     className="text-5xl sm:text-7xl font-black tracking-tight text-slate-900 dark:text-white mb-2"
                 >
-                    Go near. Go far.
+                    {labels.hero.headline_1}
                 </motion.h1>
                 <motion.h1
                     initial={{ opacity: 0, y: 20 }}
@@ -122,7 +120,7 @@ export default function Hero() {
                     className="text-5xl sm:text-7xl font-black tracking-tight mb-8"
                 >
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff0080] via-[#ff4d00] to-[#ffb700] drop-shadow-2xl">
-                        Go Cheap.
+                        {labels.hero.headline_2}
                     </span>
                 </motion.h1>
 
@@ -132,8 +130,7 @@ export default function Hero() {
                     transition={{ delay: 0.8 }}
                     className="text-lg text-slate-600 dark:text-gray-400 max-w-xl mb-12 font-medium"
                 >
-                    Unlock secret flight deals airlines don't want you to see.
-                    <br className="hidden sm:block" /> We find the cheapest prices in seconds.
+                    {labels.hero.subheadline}
                 </motion.p>
 
                 {/* SEARCH WIDGET CONTAINER */}
@@ -147,10 +144,10 @@ export default function Hero() {
                     {/* Tabs */}
                     <div className="flex items-center gap-6 mb-4 px-4">
                         <button className="text-slate-900 dark:text-white font-bold text-sm flex items-center gap-2 border-b-2 border-slate-900 dark:border-white pb-1">
-                            Ida e volta
+                            {labels.hero.roundtrip}
                         </button>
                         <button className="text-slate-500 dark:text-gray-400 font-medium text-sm flex items-center gap-2 hover:text-slate-900 dark:hover:text-white transition-colors">
-                            1 Viajante, Econômica
+                            {labels.hero.passenger}
                         </button>
                     </div>
 
@@ -193,12 +190,28 @@ export default function Hero() {
                         >
                             {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : (
                                 <>
-                                    <Search className="w-5 h-5" /> BUSCAR
+                                    <Search className="w-5 h-5" /> {labels.hero.search}
                                 </>
                             )}
                         </button>
 
                     </div>
+
+                    {/* Airline Partners Trust Signal */}
+                    <div className="mt-12 flex flex-col items-center opacity-0 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-[1200ms] fill-mode-forwards">
+                        <p className="text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest mb-4">Parceiros Oficiais via Duffel</p>
+                        <div className="flex items-center justify-center gap-8 flex-wrap grayscale hover:grayscale-0 transition-all duration-500">
+                            {PARTNERS.map(code => (
+                                <img
+                                    key={code}
+                                    src={`https://pic.avs.io/al/200/200/${code}.png`}
+                                    alt={code}
+                                    className="h-8 w-auto opacity-50 hover:opacity-100 transition-opacity"
+                                />
+                            ))}
+                        </div>
+                    </div>
+
                 </motion.div>
 
             </div>

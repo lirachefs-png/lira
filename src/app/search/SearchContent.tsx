@@ -7,10 +7,12 @@ import { Loader2, Plane, Calendar, AlertCircle, ArrowRight, Clock } from 'lucide
 import { getUnsplashImage } from '@/lib/unsplash';
 import { motion } from 'framer-motion';
 import SearchFilters from '@/components/search/SearchFilters';
+import { useRegion } from '@/contexts/RegionContext';
 
 export default function SearchContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
+    const { labels, language } = useRegion();
     const [offers, setOffers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -132,6 +134,17 @@ export default function SearchContent() {
         });
     }, [offers, filters]);
 
+    // Helper: Format Duration
+    const formatDuration = (isoDuration: string) => {
+        return isoDuration.replace('PT', '').replace('H', 'h ').replace('M', 'm').toLowerCase();
+    };
+
+    // Helper: Format Currency
+    const formatCurrency = (amount: string, currency: string) => {
+        const locale = language === 'pt' ? 'pt-BR' : (language === 'es' ? 'es-ES' : 'en-US');
+        return Number(amount).toLocaleString(locale, { style: 'currency', currency: currency, maximumFractionDigits: 0 });
+    };
+
     // Loading Skeleton
     if (loading) {
         return (
@@ -179,14 +192,14 @@ export default function SearchContent() {
             <div className="relative z-10 pt-32 pb-8 px-4">
                 <div className="max-w-7xl mx-auto mb-8">
                     <div className="flex items-center gap-3 text-sm font-bold text-rose-500 mb-2 uppercase tracking-wider">
-                        <span className="bg-rose-500/10 px-3 py-1 rounded-full border border-rose-500/20">Round Trip</span>
-                        <span className="bg-rose-500/10 px-3 py-1 rounded-full border border-rose-500/20">1 Passenger</span>
+                        <span className="bg-rose-500/10 px-3 py-1 rounded-full border border-rose-500/20">{labels.search_results.round_trip}</span>
+                        <span className="bg-rose-500/10 px-3 py-1 rounded-full border border-rose-500/20">{labels.search_results.passenger}</span>
                     </div>
                     <h1 className="text-3xl md:text-4xl font-black text-white flex items-center gap-3">
                         {origin} <ArrowRight className="text-gray-600" /> {destination}
                     </h1>
                     <p className="text-gray-400 mt-2 flex items-center gap-2 font-medium">
-                        <Calendar className="w-4 h-4 text-rose-500" /> {date} • Economy
+                        <Calendar className="w-4 h-4 text-rose-500" /> {date} • {labels.common.economy}
                     </p>
                 </div>
 
@@ -195,9 +208,9 @@ export default function SearchContent() {
                     {error && (
                         <div className="max-w-2xl mx-auto p-8 bg-red-500/10 border border-red-500/20 backdrop-blur-md rounded-3xl flex flex-col items-center text-center gap-4 mb-8">
                             <AlertCircle className="w-12 h-12 text-red-500" />
-                            <h3 className="text-xl font-bold text-white">Oops! Something went wrong.</h3>
+                            <h3 className="text-xl font-bold text-white">{labels.search_results.error_title}</h3>
                             <p className="text-red-200">{error}</p>
-                            <button onClick={() => window.location.reload()} className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold transition-all">Try Again</button>
+                            <button onClick={() => window.location.reload()} className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold transition-all">{labels.search_results.try_again}</button>
                         </div>
                     )}
 
@@ -223,7 +236,7 @@ export default function SearchContent() {
                             {!error && offers.length > 0 && filteredOffers.length === 0 && (
                                 <div className="text-center py-20 bg-white/5 border border-white/10 rounded-2xl">
                                     <h3 className="text-xl font-bold text-white mb-2">No flights match your filters</h3>
-                                    <button onClick={() => setFilters(prev => ({ ...prev, stops: [], airlines: [], time: [], priceRange: [minPrice, maxPrice] }))} className="text-rose-500 hover:underline">Reset Filters</button>
+                                    <button onClick={() => setFilters(prev => ({ ...prev, stops: [], airlines: [], time: [], priceRange: [minPrice, maxPrice] }))} className="text-rose-500 hover:underline">{labels.search_results.reset_filters}</button>
                                 </div>
                             )}
 
@@ -233,8 +246,8 @@ export default function SearchContent() {
                                     <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-white/10">
                                         <Plane className="w-10 h-10 text-gray-600" />
                                     </div>
-                                    <h3 className="text-2xl font-bold text-white mb-2">No flights found</h3>
-                                    <p className="text-gray-400">We couldn't find any flights for these dates. Try searching for a different day or airport.</p>
+                                    <h3 className="text-2xl font-bold text-white mb-2">{labels.search_results.no_flights}</h3>
+                                    <p className="text-gray-400">{labels.search_results.no_flights_desc}</p>
                                 </div>
                             )}
 
@@ -245,11 +258,14 @@ export default function SearchContent() {
                                         <div className="flex-1">
                                             <div className="flex items-center gap-4 mb-6">
                                                 {/* Airline Logo */}
-                                                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center p-2 shadow-sm">
-                                                    {offer.owner.logo_symbol_url ? (
-                                                        <img src={offer.owner.logo_symbol_url} alt={offer.owner.name} className="w-full h-full object-contain" />
+                                                {/* Airline Logo */}
+                                                <div className="h-12 px-4 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                                                    {offer.owner.logo_lockup_url ? (
+                                                        <img src={offer.owner.logo_lockup_url} alt={offer.owner.name} className="h-8 w-auto object-contain" />
+                                                    ) : offer.owner.logo_symbol_url ? (
+                                                        <img src={offer.owner.logo_symbol_url} alt={offer.owner.name} className="h-8 w-8 object-contain" />
                                                     ) : (
-                                                        <span className="text-black font-bold text-xs">{offer.owner.iata_code}</span>
+                                                        <span className="text-black font-bold text-lg">{offer.owner.iata_code}</span>
                                                     )}
                                                 </div>
                                                 <div>
@@ -268,14 +284,14 @@ export default function SearchContent() {
                                                 <div className="flex-1 flex flex-col items-center px-4">
                                                     <div className="text-xs font-medium text-gray-400 mb-2 flex items-center gap-1">
                                                         <Clock className="w-3 h-3" />
-                                                        {offer.slices[0].duration.replace('PT', '').toLowerCase()}
+                                                        {formatDuration(offer.slices[0].duration)}
                                                     </div>
                                                     <div className="w-full h-[2px] bg-white/20 relative">
                                                         <div className="absolute top-1/2 left-0 -translate-y-1/2 w-2 h-2 rounded-full bg-rose-500"></div>
                                                         <div className="absolute top-1/2 right-0 -translate-y-1/2 w-2 h-2 rounded-full bg-white/20"></div>
                                                     </div>
                                                     <div className="text-xs text-gray-500 mt-2">
-                                                        {offer.slices[0].segments.length === 1 ? 'Direct Flight' : `${offer.slices[0].segments.length - 1} Stop(s)`}
+                                                        {offer.slices[0].segments.length === 1 ? labels.search_results.direct : `${offer.slices[0].segments.length - 1} ${labels.search_results.stops}`}
                                                     </div>
                                                 </div>
 
@@ -292,16 +308,16 @@ export default function SearchContent() {
                                         {/* Price & CTA */}
                                         <div className="flex flex-row md:flex-col justify-between items-center md:items-end gap-2 min-w-[140px]">
                                             <div className="text-right">
-                                                <p className="text-xs text-gray-400 font-medium mb-1">Total price</p>
+                                                <p className="text-xs text-gray-400 font-medium mb-1">{labels.search_results.total_price}</p>
                                                 <h3 className="text-3xl font-black text-white tracking-tight">
-                                                    {Number(offer.total_amount).toLocaleString('en-US', { style: 'currency', currency: offer.total_currency, maximumFractionDigits: 0 })}
+                                                    {formatCurrency(offer.total_amount, offer.total_currency)}
                                                 </h3>
                                             </div>
                                             <button
-                                                onClick={() => router.push(`/checkout?offerId=${offer.id}&price=${encodeURIComponent(Number(offer.total_amount).toLocaleString('en-US', { style: 'currency', currency: offer.total_currency }))}&destination=${destination}`)}
+                                                onClick={() => router.push(`/checkout?offerId=${offer.id}&price=${encodeURIComponent(formatCurrency(offer.total_amount, offer.total_currency))}&destination=${destination}`)}
                                                 className="bg-gradient-to-r from-orange-500 to-rose-600 hover:from-orange-600 hover:to-rose-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-rose-900/20 transition-all active:scale-95 w-full md:w-auto"
                                             >
-                                                Select
+                                                {labels.search_results.select}
                                             </button>
                                         </div>
                                     </div>

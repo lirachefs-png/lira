@@ -4,17 +4,25 @@ import { useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Header from '@/components/layout/Header';
 import { CreditCard, Check, User, ShieldCheck, Plane, ArrowRight, Luggage } from 'lucide-react';
+import { useRegion } from '@/contexts/RegionContext';
 
 export default function CheckoutContent() {
     const searchParams = useSearchParams();
     const offerId = searchParams.get('offerId');
     const priceStr = searchParams.get('price');
     const destination = searchParams.get('destination');
+    const { labels, language } = useRegion();
 
     // Parse base price
     const basePrice = parseFloat(priceStr?.replace(/[^0-9.]/g, '') || '0');
 
     const [loading, setLoading] = useState(false);
+
+    // Helper: Format Currency
+    const formatCurrency = (amount: number, currency: string = 'EUR') => {
+        const locale = language === 'pt' ? 'pt-BR' : (language === 'es' ? 'es-ES' : 'en-US');
+        return amount.toLocaleString(locale, { style: 'currency', currency: currency });
+    };
 
     // Passenger State
     const [passenger, setPassenger] = useState({
@@ -117,7 +125,8 @@ export default function CheckoutContent() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     offerId,
-                    price: basePrice, // Send base, backend adds services sum
+                    price: basePrice,
+                    servicesTotal, // Send services total separately
                     currency: 'eur',
                     destination,
                     originUrl: window.location.origin,
@@ -201,9 +210,9 @@ export default function CheckoutContent() {
 
             <div className="max-w-4xl mx-auto px-4 pt-32 pb-20 relative z-10">
                 <div className="flex items-center gap-4 mb-8">
-                    <h1 className="text-3xl font-black">Review & Pay</h1>
+                    <h1 className="text-3xl font-black">{labels.checkout.title}</h1>
                     <div className="px-3 py-1 bg-white/10 border border-white/20 rounded-full flex items-center gap-2 text-gray-300 text-xs font-bold uppercase tracking-wider">
-                        Step 2 of 3
+                        {labels.checkout.step}
                     </div>
                 </div>
 
@@ -217,7 +226,7 @@ export default function CheckoutContent() {
                             </div>
 
                             <h2 className="flex items-center gap-2 text-xl font-bold mb-6 relative z-10">
-                                <Plane className="w-5 h-5 text-rose-500" /> Flight Details
+                                <Plane className="w-5 h-5 text-rose-500" /> {labels.checkout.flight_details}
                             </h2>
 
                             <div className="space-y-4 relative z-10">
@@ -226,19 +235,19 @@ export default function CheckoutContent() {
                                     <ArrowRight className="text-gray-500" />
                                     <div className="text-2xl font-black">{destination || 'DST'}</div>
                                 </div>
-                                <p className="text-gray-400 text-sm">One-way • Economy • Direct</p>
+                                <p className="text-gray-400 text-sm">{labels.common.one_way} • {labels.common.economy} • {labels.search_results.direct}</p>
                             </div>
                         </section>
 
                         {/* Passenger Details Form */}
                         <section className="bg-[#151926] border border-white/10 rounded-2xl p-6 backdrop-blur-md">
                             <h2 className="flex items-center gap-2 text-xl font-bold mb-6">
-                                <User className="w-5 h-5 text-rose-500" /> Primary Passenger
+                                <User className="w-5 h-5 text-rose-500" /> {labels.checkout.passenger_details}
                             </h2>
                             <div className="grid gap-4">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <label className="text-xs text-gray-400 font-bold uppercase">First Name</label>
+                                        <label className="text-xs text-gray-400 font-bold uppercase">{labels.checkout.first_name}</label>
                                         <input
                                             name="firstName"
                                             value={passenger.firstName}
@@ -248,7 +257,7 @@ export default function CheckoutContent() {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-xs text-gray-400 font-bold uppercase">Last Name</label>
+                                        <label className="text-xs text-gray-400 font-bold uppercase">{labels.checkout.last_name}</label>
                                         <input
                                             name="lastName"
                                             value={passenger.lastName}
@@ -261,7 +270,7 @@ export default function CheckoutContent() {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <label className="text-xs text-gray-400 font-bold uppercase">Date of Birth</label>
+                                        <label className="text-xs text-gray-400 font-bold uppercase">{labels.checkout.dob}</label>
                                         <input
                                             type="date"
                                             name="dob"
@@ -271,7 +280,7 @@ export default function CheckoutContent() {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-xs text-gray-400 font-bold uppercase">Gender</label>
+                                        <label className="text-xs text-gray-400 font-bold uppercase">{labels.checkout.gender}</label>
                                         <select
                                             name="gender"
                                             value={passenger.gender}
@@ -285,7 +294,7 @@ export default function CheckoutContent() {
                                 </div>
 
                                 <div className="space-y-1">
-                                    <label className="text-xs text-gray-400 font-bold uppercase">Email</label>
+                                    <label className="text-xs text-gray-400 font-bold uppercase">{labels.checkout.email}</label>
                                     <input
                                         type="email"
                                         name="email"
@@ -296,7 +305,7 @@ export default function CheckoutContent() {
                                     />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-xs text-gray-400 font-bold uppercase">Phone</label>
+                                    <label className="text-xs text-gray-400 font-bold uppercase">{labels.checkout.phone}</label>
                                     <input
                                         type="tel"
                                         name="phone"
@@ -315,7 +324,7 @@ export default function CheckoutContent() {
                             {seatMap ? (
                                 <div>
                                     <h2 className="flex items-center gap-2 text-xl font-bold mb-4">
-                                        <Plane className="w-5 h-5 text-rose-500" /> Seat Selection
+                                        <Plane className="w-5 h-5 text-rose-500" /> {labels.checkout.seat_selection}
                                     </h2>
                                     <div className="flex items-center justify-between bg-black/20 p-4 rounded-xl border border-white/5">
                                         <div className="flex items-center gap-4">
@@ -323,15 +332,15 @@ export default function CheckoutContent() {
                                                 {selectedSeat ? selectedSeat.designator : '?'}
                                             </div>
                                             <div>
-                                                <p className="font-bold text-white">{selectedSeat ? `Seat ${selectedSeat.designator}` : 'No Seat Selected'}</p>
-                                                <p className="text-xs text-gray-500">{selectedSeat ? 'Economy' : 'Choose your spot'}</p>
+                                                <p className="font-bold text-white">{selectedSeat ? `${labels.checkout.seat_selection} ${selectedSeat.designator}` : labels.checkout.no_seat}</p>
+                                                <p className="text-xs text-gray-500">{selectedSeat ? labels.common.economy : labels.checkout.select_seat}</p>
                                             </div>
                                         </div>
                                         <button
                                             onClick={() => setShowSeatMap(true)}
                                             className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition-all"
                                         >
-                                            {selectedSeat ? 'Change' : 'Select Seat'}
+                                            {selectedSeat ? labels.checkout.change_seat : labels.checkout.select_seat}
                                         </button>
                                     </div>
                                 </div>
@@ -343,7 +352,7 @@ export default function CheckoutContent() {
                             {availableBags.length > 0 && (
                                 <div>
                                     <h2 className="flex items-center gap-2 text-xl font-bold mb-4">
-                                        <Luggage className="w-5 h-5 text-rose-500" /> Baggage
+                                        <Luggage className="w-5 h-5 text-rose-500" /> {labels.checkout.baggage}
                                     </h2>
                                     <div className="space-y-4">
                                         {availableBags.map((bag) => {
@@ -363,7 +372,7 @@ export default function CheckoutContent() {
                                                             {isSelected && <Check className="w-3 h-3 text-white" />}
                                                         </div>
                                                         <div>
-                                                            <p className="font-bold text-white">Checked Bag</p>
+                                                            <p className="font-bold text-white">{labels.checkout.checked_bag}</p>
                                                             <p className="text-xs text-gray-400 uppercase tracking-widest">{bag.metadata?.sub_type || '23kg'}</p>
                                                         </div>
                                                     </div>
@@ -382,23 +391,23 @@ export default function CheckoutContent() {
                     {/* Summary Sidebar */}
                     <div className="md:col-span-1">
                         <div className="bg-[#151926] border border-white/10 rounded-2xl p-6 backdrop-blur-md sticky top-32">
-                            <h3 className="text-gray-400 font-medium mb-4 uppercase text-xs tracking-wider">Total Due</h3>
+                            <h3 className="text-gray-400 font-medium mb-4 uppercase text-xs tracking-wider">{labels.checkout.total_due}</h3>
 
                             <div className="space-y-2 mb-4">
                                 <div className="flex justify-between items-center text-sm text-gray-400">
-                                    <span>Flight Fare</span>
-                                    <span>€{basePrice.toFixed(2)}</span>
+                                    <span>{labels.checkout.flight_fare}</span>
+                                    <span>{formatCurrency(basePrice)}</span>
                                 </div>
                                 {servicesTotal > 0 && (
                                     <div className="flex justify-between items-center text-sm text-rose-400">
-                                        <span>Extras</span>
-                                        <span>+€{servicesTotal.toFixed(2)}</span>
+                                        <span>{labels.checkout.extras}</span>
+                                        <span>+{formatCurrency(servicesTotal)}</span>
                                     </div>
                                 )}
                                 <div className="w-full h-[1px] bg-white/10 my-2"></div>
                                 <div className="flex justify-between items-center">
                                     <span className="text-gray-300">Total</span>
-                                    <span className="text-4xl font-black text-white">€{finalTotal.toFixed(2)}</span>
+                                    <span className="text-4xl font-black text-white">{formatCurrency(finalTotal)}</span>
                                 </div>
                             </div>
 
@@ -408,12 +417,20 @@ export default function CheckoutContent() {
                                 disabled={loading}
                                 className="w-full py-4 bg-[#635BFF] hover:bg-[#5851E1] text-white rounded-xl font-bold text-lg shadow-xl shadow-[#635BFF]/20 active:scale-[98%] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                {loading ? 'Redirecting...' : 'Proceed to Payment'} <ArrowRight className="w-4 h-4" />
+                                {loading ? labels.checkout.redirecting : labels.checkout.pay_button} <ArrowRight className="w-4 h-4" />
                             </button>
 
-                            <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-500">
-                                <ShieldCheck className="w-3 h-3" />
-                                Secure Checkout via Stripe
+                            <div className="mt-4 flex flex-col items-center justify-center gap-2 text-xs text-gray-500">
+                                <div className="flex items-center gap-2">
+                                    <ShieldCheck className="w-3 h-3 text-green-500" />
+                                    {labels.checkout.secure_text}
+                                </div>
+                                <div className="flex gap-2 opacity-50">
+                                    {/* Simple CSS-only card visuals or just text icons if no SVGs available */}
+                                    <div className="h-4 w-6 bg-white/20 rounded-sm"></div>
+                                    <div className="h-4 w-6 bg-white/20 rounded-sm"></div>
+                                    <div className="h-4 w-6 bg-white/20 rounded-sm"></div>
+                                </div>
                             </div>
                         </div>
                     </div>

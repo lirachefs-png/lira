@@ -80,7 +80,7 @@ export default function LocationSearch({ label, placeholder, value, onChange, va
     };
 
     return (
-        <div className="flex-1 relative group" ref={wrapperRef}>
+        <div className={`flex-1 relative group ${isOpen ? 'z-50' : 'z-10'}`} ref={wrapperRef}>
             <div className={`absolute left-4 top-1/2 -translate-y-1/2 ${styles.icon}`}>
                 <MapPin className="w-5 h-5" />
             </div>
