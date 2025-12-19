@@ -1,0 +1,392 @@
+[
+    {
+        "id": "mock_off_4126",
+        "total_amount": "474.00",
+        "total_currency": "EUR",
+        "tax_amount": "25.00",
+        "tax_currency": "EUR",
+        "owner": {
+            "name": "Duffel Airways (Simulated)"
+        },
+        "slices": [
+            {
+                "origin": {
+                    "iata_code": "LIS",
+                    "name": "Origin City"
+                },
+                "destination": {
+                    "iata_code": "LHR",
+                    "name": "Dest City"
+                },
+                "segments": [
+                    {
+                        "origin": {
+                            "iata_code": "LIS",
+                            "name": "Origin City"
+                        },
+                        "destination": {
+                            "iata_code": "LHR",
+                            "name": "Dest City"
+                        },
+                        "departing_at": "2026-01-29T10:00:00",
+                        "arriving_at": "2026-01-29T14:30:00",
+                        "operating_carrier": {
+                            "name": "SimAir"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mock_off_5628",
+        "total_amount": "352.00",
+        "total_currency": "EUR",
+        "tax_amount": "25.00",
+        "tax_currency": "EUR",
+        "owner": {
+            "name": "Duffel Airways (Simulated)"
+        },
+        "slices": [
+            {
+                "origin": {
+                    "iata_code": "LIS",
+                    "name": "Origin City"
+                },
+                "destination": {
+                    "iata_code": "JFK",
+                    "name": "Dest City"
+                },
+                "segments": [
+                    {
+                        "origin": {
+                            "iata_code": "LIS",
+                            "name": "Origin City"
+                        },
+                        "destination": {
+                            "iata_code": "JFK",
+                            "name": "Dest City"
+                        },
+                        "departing_at": "2026-01-29T10:00:00",
+                        "arriving_at": "2026-01-29T14:30:00",
+                        "operating_carrier": {
+                            "name": "SimAir"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mock_off_3562",
+        "total_amount": "678.00",
+        "total_currency": "EUR",
+        "tax_amount": "25.00",
+        "tax_currency": "EUR",
+        "owner": {
+            "name": "Duffel Airways (Simulated)"
+        },
+        "slices": [
+            {
+                "origin": {
+                    "iata_code": "LIS",
+                    "name": "Origin City"
+                },
+                "destination": {
+                    "iata_code": "CDG",
+                    "name": "Dest City"
+                },
+                "segments": [
+                    {
+                        "origin": {
+                            "iata_code": "LIS",
+                            "name": "Origin City"
+                        },
+                        "destination": {
+                            "iata_code": "CDG",
+                            "name": "Dest City"
+                        },
+                        "departing_at": "2026-01-29T10:00:00",
+                        "arriving_at": "2026-01-29T14:30:00",
+                        "operating_carrier": {
+                            "name": "SimAir"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mock_off_3815",
+        "total_amount": "421.00",
+        "total_currency": "EUR",
+        "tax_amount": "25.00",
+        "tax_currency": "EUR",
+        "owner": {
+            "name": "Duffel Airways (Simulated)"
+        },
+        "slices": [
+            {
+                "origin": {
+                    "iata_code": "LIS",
+                    "name": "Origin City"
+                },
+                "destination": {
+                    "iata_code": "GRU",
+                    "name": "Dest City"
+                },
+                "segments": [
+                    {
+                        "origin": {
+                            "iata_code": "LIS",
+                            "name": "Origin City"
+                        },
+                        "destination": {
+                            "iata_code": "GRU",
+                            "name": "Dest City"
+                        },
+                        "departing_at": "2026-01-29T10:00:00",
+                        "arriving_at": "2026-01-29T14:30:00",
+                        "operating_carrier": {
+                            "name": "SimAir"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mock_off_9987",
+        "total_amount": "765.00",
+        "total_currency": "EUR",
+        "tax_amount": "25.00",
+        "tax_currency": "EUR",
+        "owner": {
+            "name": "Duffel Airways (Simulated)"
+        },
+        "slices": [
+            {
+                "origin": {
+                    "iata_code": "LIS",
+                    "name": "Origin City"
+                },
+                "destination": {
+                    "iata_code": "DXB",
+                    "name": "Dest City"
+                },
+                "segments": [
+                    {
+                        "origin": {
+                            "iata_code": "LIS",
+                            "name": "Origin City"
+                        },
+                        "destination": {
+                            "iata_code": "DXB",
+                            "name": "Dest City"
+                        },
+                        "departing_at": "2026-01-29T10:00:00",
+                        "arriving_at": "2026-01-29T14:30:00",
+                        "operating_carrier": {
+                            "name": "SimAir"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mock_off_3338",
+        "total_amount": "301.00",
+        "total_currency": "EUR",
+        "tax_amount": "25.00",
+        "tax_currency": "EUR",
+        "owner": {
+            "name": "Duffel Airways (Simulated)"
+        },
+        "slices": [
+            {
+                "origin": {
+                    "iata_code": "LIS",
+                    "name": "Origin City"
+                },
+                "destination": {
+                    "iata_code": "MAD",
+                    "name": "Dest City"
+                },
+                "segments": [
+                    {
+                        "origin": {
+                            "iata_code": "LIS",
+                            "name": "Origin City"
+                        },
+                        "destination": {
+                            "iata_code": "MAD",
+                            "name": "Dest City"
+                        },
+                        "departing_at": "2026-01-29T10:00:00",
+                        "arriving_at": "2026-01-29T14:30:00",
+                        "operating_carrier": {
+                            "name": "SimAir"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mock_off_8949",
+        "total_amount": "338.00",
+        "total_currency": "EUR",
+        "tax_amount": "25.00",
+        "tax_currency": "EUR",
+        "owner": {
+            "name": "Duffel Airways (Simulated)"
+        },
+        "slices": [
+            {
+                "origin": {
+                    "iata_code": "LIS",
+                    "name": "Origin City"
+                },
+                "destination": {
+                    "iata_code": "BCN",
+                    "name": "Dest City"
+                },
+                "segments": [
+                    {
+                        "origin": {
+                            "iata_code": "LIS",
+                            "name": "Origin City"
+                        },
+                        "destination": {
+                            "iata_code": "BCN",
+                            "name": "Dest City"
+                        },
+                        "departing_at": "2026-01-29T10:00:00",
+                        "arriving_at": "2026-01-29T14:30:00",
+                        "operating_carrier": {
+                            "name": "SimAir"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mock_off_2514",
+        "total_amount": "453.00",
+        "total_currency": "EUR",
+        "tax_amount": "25.00",
+        "tax_currency": "EUR",
+        "owner": {
+            "name": "Duffel Airways (Simulated)"
+        },
+        "slices": [
+            {
+                "origin": {
+                    "iata_code": "LIS",
+                    "name": "Origin City"
+                },
+                "destination": {
+                    "iata_code": "AMS",
+                    "name": "Dest City"
+                },
+                "segments": [
+                    {
+                        "origin": {
+                            "iata_code": "LIS",
+                            "name": "Origin City"
+                        },
+                        "destination": {
+                            "iata_code": "AMS",
+                            "name": "Dest City"
+                        },
+                        "departing_at": "2026-01-29T10:00:00",
+                        "arriving_at": "2026-01-29T14:30:00",
+                        "operating_carrier": {
+                            "name": "SimAir"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mock_off_4689",
+        "total_amount": "177.00",
+        "total_currency": "EUR",
+        "tax_amount": "25.00",
+        "tax_currency": "EUR",
+        "owner": {
+            "name": "Duffel Airways (Simulated)"
+        },
+        "slices": [
+            {
+                "origin": {
+                    "iata_code": "LIS",
+                    "name": "Origin City"
+                },
+                "destination": {
+                    "iata_code": "FCO",
+                    "name": "Dest City"
+                },
+                "segments": [
+                    {
+                        "origin": {
+                            "iata_code": "LIS",
+                            "name": "Origin City"
+                        },
+                        "destination": {
+                            "iata_code": "FCO",
+                            "name": "Dest City"
+                        },
+                        "departing_at": "2026-01-29T10:00:00",
+                        "arriving_at": "2026-01-29T14:30:00",
+                        "operating_carrier": {
+                            "name": "SimAir"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "mock_off_8451",
+        "total_amount": "420.00",
+        "total_currency": "EUR",
+        "tax_amount": "25.00",
+        "tax_currency": "EUR",
+        "owner": {
+            "name": "Duffel Airways (Simulated)"
+        },
+        "slices": [
+            {
+                "origin": {
+                    "iata_code": "LIS",
+                    "name": "Origin City"
+                },
+                "destination": {
+                    "iata_code": "MIA",
+                    "name": "Dest City"
+                },
+                "segments": [
+                    {
+                        "origin": {
+                            "iata_code": "LIS",
+                            "name": "Origin City"
+                        },
+                        "destination": {
+                            "iata_code": "MIA",
+                            "name": "Dest City"
+                        },
+                        "departing_at": "2026-01-29T10:00:00",
+                        "arriving_at": "2026-01-29T14:30:00",
+                        "operating_carrier": {
+                            "name": "SimAir"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+]
