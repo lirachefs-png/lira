@@ -9,6 +9,7 @@ import { useForm, FormProvider, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import PassengerForm from '@/components/checkout/PassengerForm';
+import DuffelPaymentForm from '@/components/checkout/DuffelPaymentForm';
 import MayaChat from '@/components/MayaChat';
 import { AIRLINE_CABIN_IMAGES } from '@/lib/airlineImages';
 
@@ -87,6 +88,10 @@ export default function CheckoutContent() {
     const [seatMap, setSeatMap] = useState<any>(null);
     const [selectedSeat, setSelectedSeat] = useState<{ id: string, designator: string, price: number } | null>(null);
     const [showSeatMap, setShowSeatMap] = useState(false);
+
+    // Payment Step
+    const [showPaymentForm, setShowPaymentForm] = useState(false);
+    const [validatedPassengers, setValidatedPassengers] = useState<any[]>([]);
 
     // --- Form Setup ---
     const methods = useForm<CheckoutFormValues>({
@@ -247,40 +252,27 @@ export default function CheckoutContent() {
                 return;
             }
 
-            // --- PAY NOW FLOW (Stripe) ---
-            const baseAmount = selectedOffer ? parseFloat(selectedOffer.total_amount) : 0;
-            const payload = {
-                offerId: offerIdParam,
-                price: baseAmount,
-                servicesTotal,
-                currency: selectedOffer?.total_currency || 'EUR',
-                destination: selectedOffer?.slices[0].destination.iata_code,
-                originUrl: window.location.origin,
-                passengers: data.passengers,
-                selectedServices: selectedServices.map(id => ({ id })),
-                intent: 'pay'
-            };
+            // --- PAY NOW FLOW (Duffel Payments) ---
+            // Instead of redirecting to Stripe, show inline payment form
+            setValidatedPassengers(data.passengers);
+            setShowPaymentForm(true);
+            setLoading(false);
 
-            const res = await fetch('/api/checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            const text = await res.text();
-            let resData: any = {};
-            try { resData = text ? JSON.parse(text) : {}; } catch { resData = { error: text }; }
-
-            if (resData?.url) {
-                window.location.href = resData.url;
-            } else {
-                alert(`Checkout failed: ${resData?.error || 'Unknown error'}`);
-                setLoading(false);
-            }
         } catch (error: any) {
             setLoading(false);
             alert(`Error: ${error.message}`);
         }
+    };
+
+    // Handle successful Duffel payment
+    const handlePaymentSuccess = (bookingReference: string, orderId: string) => {
+        router.push(`/checkout/success?booking_ref=${bookingReference}&order_id=${orderId}&mode=paid`);
+    };
+
+    // Handle payment error
+    const handlePaymentError = (error: string) => {
+        setShowPaymentForm(false);
+        alert(`Payment failed: ${error}`);
     };
 
     // --- Derived UI Data ---
@@ -527,17 +519,37 @@ export default function CheckoutContent() {
                                     {paymentIntent === 'hold' && holdExpiresAt && (<p className="mt-2 text-[10px] text-emerald-400/80 text-center">{labels.checkout.price_guaranteed} {new Date(holdExpiresAt).toLocaleTimeString()}</p>)}
                                 </div>
 
-
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className={`w-full py-4 rounded-xl font-bold text-lg shadow-xl active:scale-[98%] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${paymentIntent === 'hold' ? 'bg-gradient-to-r from-emerald-500 to-teal-600' : 'bg-[#635BFF] hover:bg-[#5851E1]'}`}
-                                >
-                                    {loading ? <span className="animate-spin">⏳</span> : <>{paymentIntent === 'hold' ? labels.checkout.confirm_reservation : labels.checkout.pay_now} <ArrowRight className="w-4 h-4" /></>}
-                                </button>
-                                <div className="mt-4 flex flex-col items-center justify-center gap-2 text-xs text-gray-500">
-                                    <div className="flex items-center gap-2"><ShieldCheck className="w-3 h-3 text-green-500" />{labels.checkout.secure_text}</div>
-                                </div>
+                                {/* Payment Form or Submit Button */}
+                                {showPaymentForm && paymentIntent === 'pay' ? (
+                                    <div className="space-y-4">
+                                        <h4 className="font-bold text-white text-sm flex items-center gap-2">
+                                            <CreditCard className="w-4 h-4 text-indigo-400" />
+                                            Dados do Cartão
+                                        </h4>
+                                        <DuffelPaymentForm
+                                            offerId={offerIdParam || ''}
+                                            amount={finalTotal}
+                                            currency={selectedOffer?.total_currency || 'EUR'}
+                                            passengers={validatedPassengers}
+                                            selectedServices={selectedServices}
+                                            onSuccess={handlePaymentSuccess}
+                                            onError={handlePaymentError}
+                                        />
+                                    </div>
+                                ) : (
+                                    <>
+                                        <button
+                                            type="submit"
+                                            disabled={loading}
+                                            className={`w-full py-4 rounded-xl font-bold text-lg shadow-xl active:scale-[98%] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${paymentIntent === 'hold' ? 'bg-gradient-to-r from-emerald-500 to-teal-600' : 'bg-[#635BFF] hover:bg-[#5851E1]'}`}
+                                        >
+                                            {loading ? <span className="animate-spin">⏳</span> : <>{paymentIntent === 'hold' ? labels.checkout.confirm_reservation : labels.checkout.pay_now} <ArrowRight className="w-4 h-4" /></>}
+                                        </button>
+                                        <div className="mt-4 flex flex-col items-center justify-center gap-2 text-xs text-gray-500">
+                                            <div className="flex items-center gap-2"><ShieldCheck className="w-3 h-3 text-green-500" />{labels.checkout.secure_text}</div>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </form>
