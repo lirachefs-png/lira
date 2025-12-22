@@ -7,6 +7,8 @@ import { Loader2, Plane, Calendar, AlertCircle, ArrowRight, Clock } from 'lucide
 import { getUnsplashImage } from '@/lib/unsplash';
 import { motion } from 'framer-motion';
 import SearchFilters from '@/components/search/SearchFilters';
+import OfferConditions from '@/components/search/OfferConditions';
+import AirlineLogo from '@/components/ui/AirlineLogo';
 import { useRegion } from '@/contexts/RegionContext';
 
 export default function SearchContent() {
@@ -38,7 +40,15 @@ export default function SearchContent() {
             setLoading(true);
             setError('');
             try {
-                const params: Record<string, string> = { origin, destination, date, adults: '1' };
+                const params: Record<string, string> = {
+                    origin,
+                    destination,
+                    date,
+                    adults: searchParams.get('adults') || '1',
+                    children: searchParams.get('children') || '0',
+                    infants: searchParams.get('infants') || '0',
+                    cabin: searchParams.get('cabin') || 'economy'
+                };
                 if (returnDate) params.returnDate = returnDate;
 
                 // Advanced Params (Private Fares, etc.)
@@ -263,16 +273,14 @@ export default function SearchContent() {
                                         {/* Flight Route Info */}
                                         <div className="flex-1">
                                             <div className="flex items-center gap-4 mb-6">
-                                                {/* Airline Logo */}
-                                                {/* Airline Logo */}
-                                                <div className="h-12 px-4 bg-white rounded-xl flex items-center justify-center shadow-sm">
-                                                    {offer.owner.logo_lockup_url ? (
-                                                        <img src={offer.owner.logo_lockup_url} alt={offer.owner.name} className="h-8 w-auto object-contain" />
-                                                    ) : offer.owner.logo_symbol_url ? (
-                                                        <img src={offer.owner.logo_symbol_url} alt={offer.owner.name} className="h-8 w-8 object-contain" />
-                                                    ) : (
-                                                        <span className="text-black font-bold text-lg">{offer.owner.iata_code}</span>
-                                                    )}
+                                                {/* Airline Logo - Using Duffel CDN */}
+                                                <div className="h-12 px-3 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                                                    <AirlineLogo
+                                                        iataCode={offer.owner.iata_code}
+                                                        name={offer.owner.name}
+                                                        size="md"
+                                                        variant="lockup"
+                                                    />
                                                 </div>
                                                 <div>
                                                     <h4 className="font-bold text-white text-lg">{offer.owner.name}</h4>
@@ -295,9 +303,17 @@ export default function SearchContent() {
                                                     <div className="w-full h-[2px] bg-white/20 relative">
                                                         <div className="absolute top-1/2 left-0 -translate-y-1/2 w-2 h-2 rounded-full bg-rose-500"></div>
                                                         <div className="absolute top-1/2 right-0 -translate-y-1/2 w-2 h-2 rounded-full bg-white/20"></div>
+                                                        {/* Visual dots for stops could be added here in future */}
                                                     </div>
                                                     <div className="text-xs text-gray-500 mt-2">
-                                                        {offer.slices[0].segments.length === 1 ? labels.search_results.direct : `${offer.slices[0].segments.length - 1} ${labels.search_results.stops}`}
+                                                        {(() => {
+                                                            const layovers = offer.slices[0].segments.length - 1;
+                                                            const technicalStops = offer.slices[0].segments.reduce((acc: number, seg: any) => acc + (seg.stops?.length || 0), 0);
+                                                            const totalStops = layovers + technicalStops;
+
+                                                            if (totalStops === 0) return labels.search_results.direct;
+                                                            return `${totalStops} ${labels.search_results.stops} ${technicalStops > 0 && layovers === 0 ? '(Tech)' : ''}`;
+                                                        })()}
                                                     </div>
                                                 </div>
 
@@ -305,6 +321,10 @@ export default function SearchContent() {
                                                     <div className="text-2xl font-black text-white">{offer.slices[0].segments[offer.slices[0].segments.length - 1].arriving_at.split('T')[1].slice(0, 5)}</div>
                                                     <div className="text-sm font-bold text-gray-500">{offer.slices[0].destination.iata_code}</div>
                                                 </div>
+                                            </div>
+                                            {/* Offer conditions (Refunds/Changes) */}
+                                            <div className="mt-4 pt-4 border-t border-white/5 flex justify-center md:justify-start">
+                                                <OfferConditions conditions={offer.conditions} />
                                             </div>
                                         </div>
 
@@ -320,7 +340,10 @@ export default function SearchContent() {
                                                 </h3>
                                             </div>
                                             <button
-                                                onClick={() => router.push(`/checkout?offerId=${offer.id}&price=${encodeURIComponent(formatCurrency(offer.total_amount, offer.total_currency))}&destination=${destination}`)}
+                                                onClick={() => {
+                                                    localStorage.setItem('selectedOffer', JSON.stringify(offer));
+                                                    router.push(`/checkout?offerId=${offer.id}&price=${encodeURIComponent(formatCurrency(offer.total_amount, offer.total_currency))}&destination=${destination}`);
+                                                }}
                                                 className="bg-gradient-to-r from-orange-500 to-rose-600 hover:from-orange-600 hover:to-rose-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-rose-900/20 transition-all active:scale-95 w-full md:w-auto"
                                             >
                                                 {labels.search_results.select}

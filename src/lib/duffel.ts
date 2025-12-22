@@ -27,7 +27,13 @@ export async function createBooking(offerId: string, passengerDetails?: any, ser
             title: passengerDetails?.gender === 'm' ? "mr" : "ms",
             gender: passengerDetails?.gender || "m",
             email: passengerDetails?.email,
-            phone_number: passengerDetails?.phone || "+15550109999" // Duffel requires E.164
+            phone_number: passengerDetails?.phone || "+15550109999", // Duffel requires E.164
+            ...(passengerDetails?.hasLoyalty && passengerDetails?.loyaltyAirline && passengerDetails?.loyaltyNumber ? {
+                loyalty_programme_accounts: [{
+                    airline_iata_code: passengerDetails.loyaltyAirline,
+                    account_number: passengerDetails.loyaltyNumber
+                }]
+            } : {})
         }));
 
         // Structure services
@@ -64,7 +70,7 @@ export async function createBooking(offerId: string, passengerDetails?: any, ser
         const order = await duffel.orders.create(orderParams);
 
         console.log('✈️ Duffel Order Created:', order.data.id);
-        return { success: true, orderId: order.data.id, bookingReference: order.data.booking_reference };
+        return { success: true, orderId: order.data.id, bookingReference: order.data.booking_reference, orderData: order.data };
 
     } catch (error: any) {
         console.error('❌ Duffel Booking Failed:', error);

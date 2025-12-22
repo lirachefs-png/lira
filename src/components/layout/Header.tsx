@@ -53,12 +53,9 @@ export default function Header() {
     return (
         <>
             <header
-                className={`fixed top-0 w-full z-[9999] transition-all duration-500 border-b ${scrolled
-                    ? "bg-white/80 dark:bg-black/50 backdrop-blur-md border-slate-200 dark:border-white/10 shadow-sm"
-                    : "bg-transparent border-transparent py-6"
-                    }`}
+                className="fixed top-0 w-full z-[200] h-20 transition-all duration-300 border-b border-white/5 bg-white/80 dark:bg-[#0B0F19]/80 backdrop-blur-md shadow-sm"
             >
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+                <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
                     {/* LEFT: Logo */}
                     <Link href="/" className="flex items-center gap-[10px] group">
                         <div className="relative h-[58px] w-auto">
@@ -74,17 +71,17 @@ export default function Header() {
                     </Link>
 
                     {/* CENTER: Pill Navigation */}
-                    <nav className={`hidden md:flex items-center p-1 rounded-full transition-all duration-500 ${scrolled ? 'bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10' : 'bg-black/5 dark:bg-white/10 border border-white/20 backdrop-blur-md'}`}>
-                        <Link href="/" className="px-6 py-2 rounded-full text-sm font-bold bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm transition-all hover:scale-105 active:scale-95">
+                    <nav className="hidden md:flex items-center gap-1 p-1 rounded-full bg-slate-100/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md">
+                        <Link href="/" className="px-5 py-2 rounded-full text-sm font-bold bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm transition-all hover:scale-105 active:scale-95">
                             {labels.flights}
                         </Link>
 
                         {/* Maya AI Chat Widget */}
-                        <div className="px-2">
+                        <div className="px-1">
                             <MayaChat />
                         </div>
 
-                        <Link href="/experiences" className="px-6 py-2 rounded-full text-sm font-bold text-slate-600 dark:text-gray-200 hover:text-slate-900 dark:hover:text-white transition-all hover:bg-black/5 dark:hover:bg-white/10">
+                        <Link href="/experiences" className="px-5 py-2 rounded-full text-sm font-bold text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white transition-all hover:bg-white/50 dark:hover:bg-white/5">
                             {labels.experiences}
                         </Link>
                     </nav>
@@ -96,10 +93,6 @@ export default function Header() {
                             <div className="hidden lg:flex items-center gap-2">
                                 <Link href="/admin" className="px-3 py-1 bg-rose-100 dark:bg-rose-600/20 border border-rose-200 dark:border-rose-500/50 text-rose-600 dark:text-rose-500 text-[10px] font-bold tracking-wider rounded-md backdrop-blur-md hover:bg-rose-200 dark:hover:bg-rose-600/30 transition-colors">
                                     ADMIN
-                                </Link>
-                                <Link href="/admin/voice" className="flex items-center gap-1.5 px-3 py-1 bg-violet-100 dark:bg-violet-600/20 border border-violet-200 dark:border-violet-500/50 text-violet-600 dark:text-violet-400 text-[10px] font-bold tracking-wider rounded-full backdrop-blur-md hover:bg-violet-200 dark:hover:bg-violet-600/30 transition-colors">
-                                    <Mic className="w-3 h-3" />
-                                    VOICE STUDIO
                                 </Link>
                             </div>
                         )}

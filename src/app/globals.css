@@ -4,6 +4,16 @@
 
 @layer base {
   :root {
+    color-scheme: light dark;
+
+    /* Variáveis que mudam sozinhas baseadas no tema - Prompt do User */
+    --bg-page: light-dark(#ffffff, #0b1120);
+    --bg-card: light-dark(#ffffff, #161e2d);
+    --text-main: light-dark(#1f2937, #f9fafb);
+    --card-shadow: light-dark(0 10px 15px -3px rgba(0, 0, 0, 0.1), none);
+    --card-border: light-dark(1px solid #e5e7eb, 1px solid #334155);
+
+    /* Existing Shadcn Variables */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
@@ -36,6 +46,8 @@
   }
 
   .dark {
+    color-scheme: dark;
+
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
@@ -63,6 +75,16 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer components {
+  .card-destino {
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    box-shadow: var(--card-shadow);
+    border: var(--card-border);
+    transition: all 0.3s ease;
   }
 }
 

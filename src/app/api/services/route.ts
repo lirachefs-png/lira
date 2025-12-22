@@ -30,7 +30,9 @@ export async function GET(request: Request) {
         return NextResponse.json({
             baggage: bags,
             other: otherServices,
-            all: services
+            all: services,
+            payment_requirements: offer.data.payment_requirements, // Needed for Hold Order logic
+            passengers: offer.data.passengers // Needed for Dynamic Checkout Form
         });
 
     } catch (error: any) {

@@ -29,6 +29,7 @@ export async function getUnsplashImage(query: string): Promise<string | null> {
         return data.urls?.regular || null;
     } catch (error) {
         console.error('Error fetching Unsplash image:', error);
-        return null;
+        // Fallback image (Tropical Beach) if API fails/limits
+        return 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?q=80&w=2070&auto=format&fit=crop';
     }
 }

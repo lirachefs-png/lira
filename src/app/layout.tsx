@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     description: "Desbloqueie ofertas secretas de voos que as companhias aéreas não querem que você veja.",
     images: [
       {
-        url: "/og-image.jpg", // We need to ensure this exists or use a placeholder
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "AllTrip Hero Image",
@@ -45,11 +45,7 @@ export const metadata: Metadata = {
 };
 
 import { ThemeProvider } from "@/components/theme-provider";
-
-// ... existing code ...
-
 import { RegionProvider } from "@/contexts/RegionContext";
-
 import Footer from "@/components/layout/Footer";
 
 export default function RootLayout({
