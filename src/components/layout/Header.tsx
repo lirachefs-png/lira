@@ -81,7 +81,7 @@ export default function Header() {
                             <MayaChat />
                         </div>
 
-                        <Link href="/experiences" className="px-5 py-2 rounded-full text-sm font-bold text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white transition-all hover:bg-white/50 dark:hover:bg-white/5">
+                        <Link href="/guide" className="px-5 py-2 rounded-full text-sm font-bold text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white transition-all hover:bg-white/50 dark:hover:bg-white/5">
                             {labels.experiences}
                         </Link>
                     </nav>
@@ -204,7 +204,7 @@ export default function Header() {
                                 <Link href="/" className="text-xl font-bold text-slate-900 dark:text-white" onClick={() => setMobileMenuOpen(false)}>
                                     {labels.flights}
                                 </Link>
-                                <Link href="/experiences" className="text-xl font-bold text-slate-500 dark:text-gray-400" onClick={() => setMobileMenuOpen(false)}>
+                                <Link href="/guide" className="text-xl font-bold text-slate-500 dark:text-gray-400" onClick={() => setMobileMenuOpen(false)}>
                                     {labels.experiences}
                                 </Link>
                                 {user && (
