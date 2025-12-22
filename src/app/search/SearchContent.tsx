@@ -341,7 +341,9 @@ export default function SearchContent() {
                                             </div>
                                             <button
                                                 onClick={() => {
+                                                    console.log('💾 Saving offer to localStorage:', offer.id, offer.total_amount, offer.total_currency);
                                                     localStorage.setItem('selectedOffer', JSON.stringify(offer));
+                                                    console.log('✅ Offer saved. Navigating to checkout...');
                                                     router.push(`/checkout?offerId=${offer.id}&price=${encodeURIComponent(formatCurrency(offer.total_amount, offer.total_currency))}&destination=${destination}`);
                                                 }}
                                                 className="bg-gradient-to-r from-orange-500 to-rose-600 hover:from-orange-600 hover:to-rose-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-rose-900/20 transition-all active:scale-95 w-full md:w-auto"
