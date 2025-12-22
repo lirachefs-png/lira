@@ -1,7 +1,15 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Zoho SMTP transporter
+const transporter = nodemailer.createTransport({
+    host: 'smtp.zoho.eu',
+    port: 465,
+    secure: true,
+    auth: {
+        user: process.env.ZOHO_EMAIL,
+        pass: process.env.ZOHO_PASSWORD,
+    },
+});
 
 interface BookingEmailData {
     to: string;
@@ -102,15 +110,15 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
     `;
 
     try {
-        const result = await resend.emails.send({
-            from: 'AllTrip <contato@alltripapp.com>',
-            to: [to],
+        const info = await transporter.sendMail({
+            from: `"AllTrip" <${process.env.ZOHO_EMAIL}>`,
+            to: to,
             subject: `✈️ Reserva Confirmada - ${flightDetails.origin} → ${flightDetails.destination} | ${bookingReference}`,
             html: emailHtml,
         });
 
-        console.log('📧 Booking confirmation email sent:', result);
-        return { success: true, id: result.data?.id };
+        console.log('📧 Booking confirmation email sent:', info.messageId);
+        return { success: true, id: info.messageId };
     } catch (error) {
         console.error('❌ Failed to send booking email:', error);
         return { success: false, error };
