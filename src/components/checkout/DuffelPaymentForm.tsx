@@ -66,6 +66,10 @@ export default function DuffelPaymentForm({
 
         if (amount > 0) {
             createPaymentIntent();
+        } else {
+            // Amount is 0 - offer not loaded properly
+            setLoading(false);
+            setError('Offer not loaded correctly. Please go back and select a flight again.');
         }
     }, [offerId, amount, currency]);
 

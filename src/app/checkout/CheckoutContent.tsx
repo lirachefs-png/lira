@@ -276,7 +276,28 @@ export default function CheckoutContent() {
     };
 
     // --- Derived UI Data ---
-    if (!selectedOffer && !offerIdParam) return <div className="min-h-screen bg-[#0B0F19] text-white flex items-center justify-center">Loading Offer...</div>;
+    // If no offer ID in URL, redirect back to search
+    if (!offerIdParam) {
+        return (
+            <div className="min-h-screen bg-[#0B0F19] text-white flex flex-col items-center justify-center gap-4">
+                <p className="text-lg">No flight selected</p>
+                <a href="/search" className="px-4 py-2 bg-rose-500 rounded-lg text-white font-medium">Search Flights</a>
+            </div>
+        );
+    }
+
+    // If offer ID exists but offer not loaded from localStorage, show loading with fallback message
+    if (!selectedOffer) {
+        return (
+            <div className="min-h-screen bg-[#0B0F19] text-white flex flex-col items-center justify-center gap-4">
+                <div className="animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full"></div>
+                <p className="text-gray-400">Loading offer details...</p>
+                <p className="text-xs text-gray-600 max-w-xs text-center">
+                    If this takes too long, the offer may have expired. <a href="/search" className="text-rose-400 underline">Search again</a>
+                </p>
+            </div>
+        );
+    }
 
     const airlineName = selectedOffer?.owner?.name || 'Airline';
     const airlineCode = selectedOffer?.owner?.iata_code || 'XX';
