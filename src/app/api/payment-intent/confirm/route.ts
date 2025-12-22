@@ -47,7 +47,7 @@ export async function POST(request: Request) {
             passengers: duffelPassengers,
             payments: [
                 {
-                    type: 'duffel_payments',
+                    type: 'balance',
                     amount: confirmedIntent.data.amount,
                     currency: confirmedIntent.data.currency,
                 }
