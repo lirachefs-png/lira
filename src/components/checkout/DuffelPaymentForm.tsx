@@ -145,16 +145,18 @@ export default function DuffelPaymentForm({
 
     return (
         <div className="space-y-4">
-            {/* Duffel Payments Component */}
+            {/* Duffel Payments Component - Premium Dark Theme */}
             {clientToken && (
-                <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-gray-200 dark:border-white/10">
+                <div className="bg-[#0d1117] rounded-2xl p-6 border border-indigo-500/30 shadow-xl shadow-indigo-500/10">
                     <DuffelPayments
                         paymentIntentClientToken={clientToken}
                         onSuccessfulPayment={handleSuccessfulPayment}
                         onFailedPayment={handleFailedPayment}
                         styles={{
-                            fontFamily: 'inherit',
-                            buttonCornerRadius: '8px',
+                            // Indigo accent color (RGB format)
+                            accentColor: '99, 102, 241', // Indigo-500
+                            fontFamily: 'Inter, system-ui, sans-serif',
+                            buttonCornerRadius: '12px',
                         }}
                     />
                 </div>
