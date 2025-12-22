@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { duffel } from '@/lib/duffel';
+import { sendBookingConfirmation } from '@/lib/booking-email';
 
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { paymentIntentId, offerId, passengers, selectedServices } = body;
+        const { paymentIntentId, offerId, passengers, selectedServices, flightDetails } = body;
 
         if (!paymentIntentId || !offerId || !passengers?.length) {
             return NextResponse.json(
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
             phone_number: p.phone_number || '+351000000000',
         }));
 
-        // 3. Create the Order with duffel_payments
+        // 3. Create the Order with balance (Duffel Payments)
         console.log('Creating Order with Duffel Payments...');
 
         const orderPayload: any = {
@@ -65,6 +66,36 @@ export async function POST(request: Request) {
         const order = await duffel.orders.create(orderPayload);
 
         console.log('Order created:', order.data.id, 'Booking ref:', order.data.booking_reference);
+
+        // 4. Send confirmation email
+        const primaryPassenger = passengers[0];
+        if (primaryPassenger?.email) {
+            try {
+                // Extract flight details from the order or use passed data
+                const slice = order.data.slices?.[0];
+                const segment = slice?.segments?.[0];
+
+                await sendBookingConfirmation({
+                    to: primaryPassenger.email,
+                    passengerName: `${primaryPassenger.given_name} ${primaryPassenger.family_name}`,
+                    bookingReference: order.data.booking_reference || 'N/A',
+                    orderId: order.data.id,
+                    flightDetails: flightDetails || {
+                        origin: segment?.origin?.iata_code || 'N/A',
+                        destination: segment?.destination?.iata_code || 'N/A',
+                        departureDate: segment?.departing_at?.split('T')[0] || 'N/A',
+                        departureTime: segment?.departing_at?.split('T')[1]?.substring(0, 5) || 'N/A',
+                        airline: order.data.owner?.name || 'Airline',
+                    },
+                    totalAmount: confirmedIntent.data.amount,
+                    currency: confirmedIntent.data.currency,
+                });
+                console.log('📧 Confirmation email sent to:', primaryPassenger.email);
+            } catch (emailError) {
+                console.error('Failed to send email (non-blocking):', emailError);
+                // Don't fail the order if email fails
+            }
+        }
 
         return NextResponse.json({
             success: true,
