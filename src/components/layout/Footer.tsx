@@ -26,6 +26,7 @@ export default function Footer() {
                         <h3 className="text-white font-bold text-lg">Suporte</h3>
                         <ul className="space-y-3 text-sm">
                             <li><Link href="/help" className="hover:text-white transition-colors">Central de Ajuda</Link></li>
+                            <li><Link href="/help#faq" className="hover:text-white transition-colors">Perguntas Frequentes</Link></li>
                             <li><Link href="/contact" className="hover:text-white transition-colors">Fale Conosco</Link></li>
                         </ul>
                     </div>

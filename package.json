@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@duffel/api": "^4.21.1",
+    "@duffel/components": "^3.13.0",
     "@hookform/resolvers": "^5.2.2",
     "@react-email/components": "^1.0.2",
     "@react-email/render": "^2.0.0",
