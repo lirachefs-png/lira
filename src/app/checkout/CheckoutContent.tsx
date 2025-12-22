@@ -544,7 +544,7 @@ export default function CheckoutContent() {
                                             Dados do Cartão
                                         </h4>
                                         <DuffelPaymentForm
-                                            offerId={offerIdParam || ''}
+                                            offerId={selectedOffer?.id || ''}
                                             amount={finalTotal}
                                             currency={selectedOffer?.total_currency || 'EUR'}
                                             passengers={validatedPassengers}
