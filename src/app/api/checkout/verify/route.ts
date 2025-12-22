@@ -75,6 +75,59 @@ export async function GET(request: Request) {
                 const booking = await createBookingDuffel(offerId, passengerData, serviceIds);
                 console.log(`✅ Fallback Booking Success: ${booking.bookingReference}`);
 
+                // --- SEND EMAIL (NEW) ---
+                try {
+                    const { render } = await import('@react-email/render');
+                    const BookingConfirmationTemplate = (await import('@/components/email/BookingConfirmationTemplate')).default;
+                    const { sendEmail } = await import('@/lib/email');
+                    const { DESTINATIONS } = await import('@/lib/destinations');
+
+                    // Resolve Destination Image
+                    let destinationCity = 'Destination';
+                    let heroImage = undefined;
+
+                    // access order data from the modified return
+                    const orderData = (booking as any).orderData;
+
+                    if (orderData) {
+                        const firstSlice = orderData.slices?.[0];
+                        const lastSegment = firstSlice?.segments?.[firstSlice.segments.length - 1];
+                        if (lastSegment?.destination?.city_name) {
+                            destinationCity = lastSegment.destination.city_name;
+                            // Find in DESTINATIONS (case insensitive)
+                            const foundDest = DESTINATIONS.find(d =>
+                                d.city.toLowerCase() === destinationCity.toLowerCase() ||
+                                d.country.toLowerCase() === destinationCity.toLowerCase()
+                            );
+                            if (foundDest) heroImage = foundDest.defaultImage;
+                        }
+                    }
+
+                    const html = await render(BookingConfirmationTemplate({
+                        customerName: passengerData?.[0]?.given_name ? `${passengerData[0].given_name} ${passengerData[0].family_name}` : 'Traveler',
+                        bookingReference: booking.bookingReference,
+                        originCity: orderData?.slices?.[0]?.origin?.city_name || 'Origin',
+                        destinationCity: destinationCity,
+                        flightDate: orderData?.slices?.[0]?.segments?.[0]?.departing_at ? new Date(orderData.slices[0].segments[0].departing_at).toLocaleDateString('pt-BR') : 'Data',
+                        airlineName: orderData?.owner?.name || 'AllTrip Partner',
+                        airlineLogo: orderData?.owner?.logo_symbol_url || undefined,
+                        totalAmount: `${(session.amount_total || 0) / 100} ${session.currency?.toUpperCase()}`,
+                        destinationImage: heroImage
+                    }));
+
+                    if (customerEmail) {
+                        await sendEmail({
+                            to: customerEmail,
+                            subject: `✈️ Sua reserva para ${destinationCity} está confirmada!`,
+                            html
+                        });
+                        console.log(`📧 Email sent to ${customerEmail}`);
+                    }
+                } catch (emailErr) {
+                    console.error("Failed to send email:", emailErr);
+                }
+                // ------------------------
+
                 // 3. Update DB
                 await updateBooking(session.id, {
                     state: "confirmed",

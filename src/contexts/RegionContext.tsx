@@ -62,6 +62,12 @@ interface RegionContextType {
             pay_button: string;
             redirecting: string;
             secure_text: string;
+            pay_now: string;
+            hold_price: string;
+            instant_desc: string;
+            hold_desc: string;
+            confirm_reservation: string;
+            price_guaranteed: string;
         };
         common: {
             economy: string;
@@ -124,7 +130,13 @@ const LABELS = {
             extras: 'Extras',
             pay_button: 'Ir para Pagamento',
             redirecting: 'Redirecionando...',
-            secure_text: 'Pagamento Seguro via Stripe'
+            secure_text: 'Pagamento Seguro via Stripe',
+            pay_now: 'Pagar Agora',
+            hold_price: 'Reservar Preço',
+            instant_desc: 'Confirmação imediata',
+            hold_desc: 'Pague depois',
+            confirm_reservation: 'Confirmar Reserva',
+            price_guaranteed: 'Preço garantido até'
         },
         common: {
             economy: 'Econômica',
@@ -182,7 +194,13 @@ const LABELS = {
             extras: 'Extras',
             pay_button: 'Proceed to Payment',
             redirecting: 'Redirecting...',
-            secure_text: 'Secure Checkout via Stripe'
+            secure_text: 'Secure Checkout via Stripe',
+            pay_now: 'Pay Now',
+            hold_price: 'Hold Price',
+            instant_desc: 'Instant confirmation',
+            hold_desc: 'Pay later',
+            confirm_reservation: 'Confirm Reservation',
+            price_guaranteed: 'Price guaranteed until'
         },
         common: {
             economy: 'Economy',
@@ -240,7 +258,13 @@ const LABELS = {
             extras: 'Extras',
             pay_button: 'Proceder al Pago',
             redirecting: 'Redirigiendo...',
-            secure_text: 'Pago Seguro vía Stripe'
+            secure_text: 'Pago Seguro vía Stripe',
+            pay_now: 'Pagar Ahora',
+            hold_price: 'Reservar Precio',
+            instant_desc: 'Confirmación inmediata',
+            hold_desc: 'Pagar después',
+            confirm_reservation: 'Confirmar Reserva',
+            price_guaranteed: 'Precio garantizado hasta'
         },
         common: {
             economy: 'Económica',

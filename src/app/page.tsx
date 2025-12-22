@@ -1,6 +1,9 @@
 import Header from "@/components/layout/Header";
 import Hero from "@/components/Hero";
+import FeaturedAds from "@/components/FeaturedAds";
 import FeaturedDestinations from "@/components/FeaturedDestinations";
+import Partners from "@/components/Partners";
+import ExperienceGrid from "@/components/ExperienceGrid";
 
 import { Metadata } from "next";
 
@@ -14,6 +17,9 @@ export default function Home() {
         <main className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-white selection:bg-rose-500/30 transition-colors duration-300">
             <Header />
             <Hero />
+            <Partners />
+            <ExperienceGrid />
+            <FeaturedAds />
             <FeaturedDestinations />
         </main>
     );

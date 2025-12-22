@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { duffel } from '@/lib/duffel';
 
 export async function POST(request: Request) {
     if (!process.env.STRIPE_SECRET_KEY) {
@@ -15,48 +16,106 @@ export async function POST(request: Request) {
 
         const {
             offerId,
-            price, // This is the BASE flight price
-            servicesTotal, // This is the total of add-ons
+            price,
+            servicesTotal,
             currency,
             destination,
             originUrl,
-            passenger,
-            selectedServices
+            passengers, // Now expecting an array
+            selectedServices,
+            intent = 'pay' // 'pay' or 'hold'
         } = body;
 
-        // Clean and parse amounts
-        const baseAmount = typeof price === 'number' ? price : parseFloat(price?.replace(/[^0-9.]/g, '') || '0');
+        // 1. FRESHNESS CHECK
+        const offer = await duffel.offers.get(offerId);
+        const serverBasePrice = parseFloat(offer.data.total_amount);
+
+        console.log(`🔍 Fresh Price Checked: ${serverBasePrice} ${offer.data.total_currency} (Client sent: ${price})`);
+
+        // Helper: Map frontend passengers to Duffel Format
+        const mapPassengersToDuffel = (frontendPassengers: any[]) => {
+            return frontendPassengers.map((p) => ({
+                id: p.id, // CRITICAL: Must match Duffel Offer Passenger ID
+                given_name: p.given_name,
+                family_name: p.family_name,
+                gender: p.gender,
+                title: p.title || 'mr',
+                born_on: p.born_on,
+                email: p.email, // Only needed for one, but fine to send
+                phone_number: p.phone_number || "+15550000000",
+                ...(p.loyaltyAirline && p.loyaltyNumber ? {
+                    loyalty_programme_accounts: [{
+                        airline_iata_code: p.loyaltyAirline,
+                        account_number: p.loyaltyNumber
+                    }]
+                } : {})
+            }));
+        };
+
+        // Primary Contact Email (First passenger with email)
+        const primaryPassenger = passengers.find((p: any) => p.email) || passengers[0];
+        const customerEmail = primaryPassenger?.email || 'no-email@provided.com';
+
+        // HOLD ORDER FLOW
+        if (intent === 'hold') {
+            if (offer.data.payment_requirements.requires_instant_payment) {
+                return NextResponse.json({ error: 'This offer requires instant payment and cannot be held.' }, { status: 400 });
+            }
+
+            console.log('Creating Hold Order for:', offerId);
+
+            const order = await duffel.orders.create({
+                type: 'hold' as any,
+                selected_offers: [offerId],
+                passengers: mapPassengersToDuffel(passengers),
+                ...(selectedServices?.length > 0 ? {
+                    services: selectedServices.map((s: any) => ({
+                        id: s.id,
+                        quantity: 1
+                    }))
+                } : {})
+            });
+
+            console.log('Hold Order Created:', order.data.id);
+
+            return NextResponse.json({
+                url: `${originUrl}/checkout/success?session_id=HOLD_${order.data.id}&offer_id=${offerId}&mode=hold&booking_ref=${order.data.booking_reference}`
+            });
+        }
+
+        // --- PAYMENT FLOW (STRIPE) ---
+        const baseAmount = serverBasePrice;
         const extrasAmount = typeof servicesTotal === 'number' ? servicesTotal : 0;
-
-        // Calculate Final Total
         const totalAmount = baseAmount + extrasAmount;
-        const unitAmount = Math.round(totalAmount * 100); // Stripe expects cents
+        const unitAmount = Math.round(totalAmount * 100);
 
-        console.log('Payment Calculation:', {
-            base: baseAmount,
-            extras: extrasAmount,
-            total: totalAmount,
-            cents: unitAmount
-        });
+        console.log('Payment Calculation:', { base: baseAmount, extras: extrasAmount, total: totalAmount, cents: unitAmount });
 
         if (unitAmount < 50) {
             return NextResponse.json({ error: 'Invalid Amount: Price too low' }, { status: 400 });
         }
 
-        // Prepare Metadata
-        const passengerMetadata = passenger ? JSON.stringify(passenger) : null;
+        // Prepare Metadata (Store limited amount or JSON string)
+        // Store essentials. Full list might be too long for Stripe metadata limit (500 chars).
+        // Storing a simplified summary.
+        const passengerSummary = passengers.map((p: any) => `${p.given_name} ${p.family_name}`).join(', ');
         const servicesMetadata = selectedServices ? JSON.stringify(selectedServices) : null;
 
+        // We will store the FULL passenger data in a different way or rely on Supabase later.
+        // For now, passing the full JSON string if it fits, else truncated.
+        const passengerMetadata = JSON.stringify(passengers).slice(0, 500);
+
+        // @ts-ignore
         const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
-            customer_email: passenger?.email,
+            payment_method_types: ['card', 'mb_way', 'multibanco'], // Expanded payment methods
+            customer_email: customerEmail,
             line_items: [
                 {
                     price_data: {
-                        currency: currency || 'eur',
+                        currency: 'eur', // forcing eur as per previous logic
                         product_data: {
                             name: `Flight to ${destination}`,
-                            description: `Flight: ${baseAmount} + Services: ${extrasAmount} | Offer ID: ${offerId}`,
+                            description: `Flight for ${passengers.length} passenger(s) (${passengerSummary}) | Offer ID: ${offerId}`,
                             images: ['https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80'],
                         },
                         unit_amount: unitAmount,
@@ -69,11 +128,16 @@ export async function POST(request: Request) {
             cancel_url: `${originUrl}/checkout?offerId=${offerId}`,
             metadata: {
                 offer_id: offerId,
-                passenger_data: passengerMetadata,
-                selected_services: servicesMetadata,  // Critical for fulfillment!
+                passenger_count: passengers.length.toString(),
+                passenger_summary: passengerSummary, // Readable summary
+                // We need to pass the passenger data to the success page handler somehow if we want to create the order THERE. 
+                // But typically we create the order in the webhook or success page. 
+                // Creating a simplified JSON for metadata.
+                passenger_data_json: JSON.stringify(passengers).slice(0, 500), // LIMITATION: Stripe metadata key max 500 chars
+                selected_services: servicesMetadata,
                 booking_type: 'flight_full_flow'
             },
-        });
+        } as any);
 
         console.log('Stripe Session Created:', session.id);
 
@@ -83,7 +147,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ url: session.url });
     } catch (error: any) {
-        console.error('Stripe Checkout Error:', error);
-        return NextResponse.json({ error: error.message || 'Unknown Stripe Error' }, { status: 500 });
+        console.error('Checkout Error:', error);
+        return NextResponse.json({ error: error.message || 'Unknown Error' }, { status: 500 });
     }
 }
