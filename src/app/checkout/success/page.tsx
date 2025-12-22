@@ -13,13 +13,21 @@ function SuccessContent() {
     const sessionId = searchParams.get('session_id');
     const offerId = searchParams.get('offer_id'); // From Stripe flow
     const bookingRef = searchParams.get('booking_ref');
-    const mode = searchParams.get('mode'); // 'hold' or undefined
+    const orderId = searchParams.get('order_id'); // From Duffel Payments flow
+    const mode = searchParams.get('mode'); // 'hold', 'paid' or undefined
     const expiresAt = searchParams.get('expires'); // For hold mode
 
     const [status, setStatus] = useState<'loading' | 'processing' | 'confirmed' | 'error' | 'timeout' | 'hold_confirmed'>('loading');
     const [bookingDetails, setBookingDetails] = useState<{ orderId?: string, ref?: string }>({});
 
     useEffect(() => {
+        // --- DUFFEL PAYMENTS FLOW (mode=paid) ---
+        if (mode === 'paid' && bookingRef) {
+            setStatus('confirmed');
+            setBookingDetails({ orderId: orderId || undefined, ref: bookingRef });
+            return;
+        }
+
         // --- HOLD MODE LOGIC ---
         if (mode === 'hold') {
             setStatus('hold_confirmed');
@@ -72,9 +80,12 @@ function SuccessContent() {
         checkStatus();
 
         return () => clearInterval(interval);
-    }, [sessionId, mode, bookingRef]);
+    }, [sessionId, mode, bookingRef, orderId]);
 
-    if (!sessionId && mode !== 'hold') {
+    // Valid if we have session_id (Stripe), mode=hold, or mode=paid with booking_ref
+    const isValidSession = sessionId || mode === 'hold' || (mode === 'paid' && bookingRef);
+
+    if (!isValidSession) {
         return (
             <div className="min-h-screen bg-[#0B0F19] text-white flex items-center justify-center">
                 <p>Invalid Session.</p>
