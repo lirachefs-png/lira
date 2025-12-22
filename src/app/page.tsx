@@ -17,10 +17,10 @@ export default function Home() {
         <main className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-white selection:bg-rose-500/30 transition-colors duration-300">
             <Header />
             <Hero />
-            <Partners />
             <ExperienceGrid />
             <FeaturedAds />
             <FeaturedDestinations />
+            <Partners />
         </main>
     );
 }
