@@ -536,24 +536,8 @@ export default function CheckoutContent() {
                                     {paymentIntent === 'hold' && holdExpiresAt && (<p className="mt-2 text-[10px] text-emerald-400/80 text-center">{labels.checkout.price_guaranteed} {new Date(holdExpiresAt).toLocaleTimeString()}</p>)}
                                 </div>
 
-                                {/* Payment Form or Submit Button */}
-                                {showPaymentForm && paymentIntent === 'pay' ? (
-                                    <div className="space-y-4">
-                                        <h4 className="font-bold text-white text-sm flex items-center gap-2">
-                                            <CreditCard className="w-4 h-4 text-indigo-400" />
-                                            Dados do Cartão
-                                        </h4>
-                                        <DuffelPaymentForm
-                                            offerId={selectedOffer?.id || ''}
-                                            amount={finalTotal}
-                                            currency={selectedOffer?.total_currency || 'EUR'}
-                                            passengers={validatedPassengers}
-                                            selectedServices={selectedServices}
-                                            onSuccess={handlePaymentSuccess}
-                                            onError={handlePaymentError}
-                                        />
-                                    </div>
-                                ) : (
+                                {/* Submit Button - only when not in payment mode */}
+                                {!showPaymentForm && (
                                     <>
                                         <button
                                             type="submit"
@@ -571,6 +555,25 @@ export default function CheckoutContent() {
                         </div>
                     </form>
                 </FormProvider>
+
+                {/* Payment Form - OUTSIDE the main form to avoid nested form error */}
+                {showPaymentForm && paymentIntent === 'pay' && (
+                    <div className="mt-6 bg-[#151926] border border-white/10 rounded-2xl p-6">
+                        <h4 className="font-bold text-white text-lg flex items-center gap-2 mb-4">
+                            <CreditCard className="w-5 h-5 text-indigo-400" />
+                            Dados do Cartão
+                        </h4>
+                        <DuffelPaymentForm
+                            offerId={selectedOffer?.id || ''}
+                            amount={finalTotal}
+                            currency={selectedOffer?.total_currency || 'EUR'}
+                            passengers={validatedPassengers}
+                            selectedServices={selectedServices}
+                            onSuccess={handlePaymentSuccess}
+                            onError={handlePaymentError}
+                        />
+                    </div>
+                )}
             </div>
         </main>
     );
