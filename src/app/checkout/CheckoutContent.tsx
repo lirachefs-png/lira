@@ -282,37 +282,15 @@ export default function CheckoutContent() {
     };
 
     // --- Derived UI Data ---
-    // If no offer loaded yet, show loading or error
+    // If no offer loaded yet, show loading (useEffect will load from localStorage)
     if (!selectedOffer) {
-        // Check if localStorage has an offer (useEffect may not have run yet)
-        const checkLocalStorage = () => {
-            if (typeof window !== 'undefined') {
-                const saved = localStorage.getItem('selectedOffer');
-                return saved !== null;
-            }
-            return false;
-        };
-
-        const hasStoredOffer = checkLocalStorage();
-
-        // If there's data in localStorage, show loading (useEffect will load it)
-        if (hasStoredOffer || offerIdParam) {
-            return (
-                <div className="min-h-screen bg-[#0B0F19] text-white flex flex-col items-center justify-center gap-4">
-                    <div className="animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full"></div>
-                    <p className="text-gray-400">Loading offer details...</p>
-                    <p className="text-xs text-gray-600 max-w-xs text-center">
-                        If this takes too long, the offer may have expired. <a href="/search" className="text-rose-400 underline">Search again</a>
-                    </p>
-                </div>
-            );
-        }
-
-        // No offer anywhere - show error
         return (
             <div className="min-h-screen bg-[#0B0F19] text-white flex flex-col items-center justify-center gap-4">
-                <p className="text-lg">No flight selected</p>
-                <a href="/search" className="px-4 py-2 bg-rose-500 rounded-lg text-white font-medium">Search Flights</a>
+                <div className="animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full"></div>
+                <p className="text-gray-400">Loading offer details...</p>
+                <p className="text-xs text-gray-600 max-w-xs text-center">
+                    If this takes too long, the offer may have expired. <a href="/search" className="text-rose-400 underline">Search again</a>
+                </p>
             </div>
         );
     }
