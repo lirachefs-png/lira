@@ -92,12 +92,21 @@ export default function Footer() {
                     </div>
                 </div>
 
+                {/* Metasearch Disclaimer */}
+                <div className="mt-12 border-t border-white/5 pt-8">
+                    <p className="text-xs text-slate-600 text-center max-w-4xl mx-auto leading-relaxed">
+                        <strong className="text-slate-500">AllTrip</strong> é uma plataforma tecnológica de metabusca de viagens.
+                        Não somos uma agência de viagens própria; facilitamos a reserva de serviços de transporte aéreo através da infraestrutura da Duffel (agente de registo IATA).
+                        Todos os pagamentos e emissões de bilhetes são processados de forma segura pelos nossos parceiros licenciados.
+                    </p>
+                </div>
+
                 {/* Copyright */}
-                <div className="mt-12 text-center text-xs text-slate-600">
+                <div className="mt-8 text-center text-xs text-slate-600">
                     <div className="mb-4 flex justify-center gap-4">
                         {/* Links moved to main grid */}
                     </div>
-                    <p>© 2025 AllTrip App. Todos os direitos reservados.</p>
+                    <p>© 2025 AllTrip. Todos os direitos reservados. | alltripapp.com</p>
                 </div>
             </div>
         </footer>

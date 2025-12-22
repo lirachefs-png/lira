@@ -55,22 +55,22 @@ export default async function CityGuidePage({ params }: PageProps) {
                     className="object-cover"
                     priority
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19] via-black/50 to-transparent" />
-
-                {/* Back Button */}
-                <Link
-                    href="/guide"
-                    className="absolute top-24 left-6 flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-white text-sm hover:bg-white/20 transition-colors border border-white/10"
-                >
-                    <ArrowLeft className="w-4 h-4" />
-                    Voltar ao Guide
-                </Link>
-
+                {/* Stronger gradient for text readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19] via-[#0B0F19]/80 to-black/40" />
                 {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
                     <div className="max-w-7xl mx-auto">
+                        {/* Back Button - aligned with content */}
+                        <Link
+                            href="/guide"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-white text-sm hover:bg-white/20 transition-colors border border-white/10 mb-6"
+                        >
+                            <ArrowLeft className="w-4 h-4" />
+                            Voltar ao Guide
+                        </Link>
+
                         {/* Badge */}
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/30 rounded-full mb-4">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/30 rounded-full mb-4 ml-4">
                             <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
                             <span className="text-amber-400 text-xs font-bold tracking-wider">ALLTRIP GUIDE</span>
                             <div className="flex gap-0.5">
