@@ -40,41 +40,31 @@ export default function MayaChat({ isCollapsed, contextPrompt }: MayaChatProps) 
         scrollToBottom();
     }, [messages, isOpen]);
 
-    // Proactive Context Trigger
+    // Proactive Context Trigger - Less intrusive version
     useEffect(() => {
         if (contextPrompt && !hasTriggeredContext.current && messages.length === 0) {
             hasTriggeredContext.current = true;
-            setIsOpen(true); // Open chat automatically (optional, maybe just show badge?)
+            // Don't auto-open - just prepare the greeting for when user opens
 
-            // Artificial delay for better UX
             setTimeout(async () => {
                 setIsLoading(true);
                 try {
-                    // Send hidden system context to generate the greeting
+                    // Generate a subtle, helpful greeting (not pushy)
                     const response = await chatWithMaya([
-                        { role: 'system', content: `CONTEXTO ATUAL: ${contextPrompt}. Crie uma saudação ultra-curta (1 frase) e empolgante sobre isso.` }
+                        { role: 'system', content: `CONTEXTO: ${contextPrompt}. Ofereça ajuda de forma breve e profissional (1 frase curta). Sem exclamações excessivas.` }
                     ]);
                     const newAiMessage: ChatMessage = { role: 'assistant', content: response };
                     setMessages([newAiMessage]);
 
-                    // Auto-play audio for the proactive message? Maybe intrusive, let's keep it muted by default unless user unmuted.
-                    if (!isMuted) {
-                        const audioBase64 = await generateSpeech(response);
-                        if (audioBase64 && audioRef.current) {
-                            audioRef.current.src = audioBase64;
-                            audioRef.current.play().catch(() => { });
-                            setIsSpeaking(true);
-                        }
-                    }
-
+                    // Don't auto-play audio - let user control
                 } catch (e) {
                     console.error("Maya Context Error", e);
                 } finally {
                     setIsLoading(false);
                 }
-            }, 1000);
+            }, 2000); // Longer delay, less aggressive
         }
-    }, [contextPrompt, isMuted]);
+    }, [contextPrompt]);
 
     const handleSendMessage = async (e?: React.FormEvent) => {
         e?.preventDefault();

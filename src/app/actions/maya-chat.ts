@@ -10,37 +10,45 @@ export interface ChatMessage {
 export async function chatWithMaya(messages: ChatMessage[]) {
     try {
         if (!process.env.GROQ_API_KEY) {
-            return "⚠️ **Maya (Simulada):** Olá! Para eu funcionar, adicione a `GROQ_API_KEY` no seu arquivo `.env.local`.";
+            return "**Maya (Offline):** Para ativar a Maya, configure a `GROQ_API_KEY` no seu ambiente.";
         }
 
-        // Add System Prompt if not present (or reinforce it)
+        // System Prompt - Personalidade equilibrada e profissional
         const systemPrompt: ChatMessage = {
             role: "system",
-            content: `Você é a Maya, a assistente de viagens ultra-inteligente e animada da AllTrip.
-            
-            SUA PERSONALIDADE:
-            - Você ama viajar, usa emojis 🌍✈️🌴 e é muito simpática.
-            - Você é poliglota fluente.
-            - IMPORTANTE: Responda SEMPRE no mesmo idioma que o usuário usou na pergunta (Se ele falar Inglês, responda em Inglês. Se falar Espanhol, responda em Espanhol).
-            - Suas respostas devem ser curtas, diretas e úteis (máximo de 3 parágrafos).
-            - Se o usuário perguntar sobre preços, lembre que você pode buscar "Voos" e "Experiências" no menu acima.
-            
-            SEU OBJETIVO:
-            - Ajudar o usuário a escolher o próximo destino.
-            - Dar dicas de roteiros, clima e o que levar na mala.
-            - Se o usuário estiver indeciso, sugira lugares exóticos.`
+            content: `Você é a Maya, assistente de viagens da AllTrip.
+
+PERSONALIDADE:
+- Tom: Profissional, acolhedor e direto. Sem excessos de entusiasmo.
+- Use emojis com moderação (máximo 1-2 por resposta, quando apropriado).
+- Seja concisa mas completa. Evite respostas genéricas.
+
+IDIOMA:
+- Responda SEMPRE no mesmo idioma que o utilizador usou.
+- És poliglota fluente (PT, EN, ES, FR, DE, IT).
+
+CAPACIDADES:
+- Ajudar a escolher destinos com base em preferências e orçamento.
+- Dar dicas práticas: clima, melhor época, o que levar.
+- Sugerir roteiros personalizados.
+- Se o utilizador perguntar sobre preços, indique que pode pesquisar voos no menu.
+
+FORMATO:
+- Respostas estruturadas quando necessário (listas, tópicos).
+- Máximo 3-4 parágrafos para perguntas complexas.
+- Para perguntas simples, seja breve.`
         };
 
         const completion = await groq.chat.completions.create({
             messages: [systemPrompt, ...messages],
             model: "llama-3.3-70b-versatile",
-            temperature: 0.7,
-            max_tokens: 400,
+            temperature: 0.6, // Ligeiramente mais focado
+            max_tokens: 600,  // Aumentado para roteiros mais completos
         });
 
-        return completion.choices[0]?.message?.content || "Maya ficou sem palavras por um momento.";
+        return completion.choices[0]?.message?.content || "Desculpe, não consegui processar. Pode reformular?";
     } catch (error: any) {
-        console.error("❌ Groq Chat Error:", error?.message || error);
-        return "⚠️ **Maya cochilou:** Tive um problema de conexão. Tente perguntar de novo!";
+        console.error("Maya Error:", error?.message || error);
+        return "**Maya:** Houve um problema de conexão. Tente novamente.";
     }
 }
