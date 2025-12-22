@@ -69,6 +69,12 @@ export async function POST(request: Request) {
 
         // 4. Send confirmation email
         const primaryPassenger = passengers[0];
+        console.log('📧 Primary passenger for email:', {
+            email: primaryPassenger?.email,
+            name: primaryPassenger?.given_name,
+            hasEmail: !!primaryPassenger?.email
+        });
+
         if (primaryPassenger?.email) {
             try {
                 // Extract flight details from the order or use passed data

@@ -32,8 +32,17 @@ export async function POST(request: Request) {
         });
     } catch (error: any) {
         console.error('PaymentIntent Error:', error);
+
+        // Get detailed error from Duffel API
+        const duffelErrors = error?.errors || error?.data?.errors;
+        const errorMessage = duffelErrors?.[0]?.message
+            || error?.message
+            || 'Failed to create payment intent';
+
+        console.error('Duffel Error Details:', JSON.stringify(duffelErrors, null, 2));
+
         return NextResponse.json(
-            { error: error.message || 'Failed to create payment intent' },
+            { error: errorMessage, details: duffelErrors },
             { status: 500 }
         );
     }
