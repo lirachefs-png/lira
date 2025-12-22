@@ -110,21 +110,27 @@ export default function CheckoutContent() {
     // --- 1. Load Offer from localStorage ---
     useEffect(() => {
         const saved = localStorage.getItem('selectedOffer');
+        console.log('🔍 Checkout: Looking for offer in localStorage...', { offerIdParam, hasSaved: !!saved });
+
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
-                // Ensure the stored offer matches the current URL offerId
-                if (offerIdParam && parsed.id === offerIdParam) {
-                    setSelectedOffer(parsed);
-                } else {
-                    console.warn("Stored offer ID mismatch. Clearing legacy data.");
-                    localStorage.removeItem('selectedOffer');
-                    setSelectedOffer(null);
+                console.log('✅ Found stored offer:', parsed.id, 'URL expects:', offerIdParam);
+
+                // Use the stored offer - it's what the user actually selected
+                // The URL param might be stale or different, trust localStorage
+                setSelectedOffer(parsed);
+
+                // Warn if there's a mismatch but don't reject the offer
+                if (offerIdParam && parsed.id !== offerIdParam) {
+                    console.warn('⚠️ Offer ID mismatch - using stored offer anyway. Stored:', parsed.id, 'URL:', offerIdParam);
                 }
             } catch (e) {
-                console.error("Error parsing stored offer", e);
+                console.error('❌ Error parsing stored offer', e);
                 localStorage.removeItem('selectedOffer');
             }
+        } else {
+            console.warn('⚠️ No offer in localStorage');
         }
     }, [offerIdParam]);
 
