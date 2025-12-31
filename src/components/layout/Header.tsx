@@ -6,12 +6,15 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 import { useTheme } from "next-themes";
-import MayaChat from "@/components/MayaChat";
+import MayaChat, { EdenTriggerButton } from "@/components/MayaChat";
 import { useRegion } from "@/contexts/RegionContext";
+
+import { useAuth } from "@/components/auth/AuthProvider";
 
 export default function Header() {
     const [scrolled, setScrolled] = useState(false);
-    const [user, setUser] = useState<SupabaseUser | null>(null);
+    // Use global auth state instead of local
+    const { user, isLoading: authLoading } = useAuth();
     const supabase = createClient();
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
@@ -21,6 +24,9 @@ export default function Header() {
     const [showRegionMenu, setShowRegionMenu] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+    // Persistent Éden Chat State (Lifted)
+    const [isEdenOpen, setIsEdenOpen] = useState(false);
+
     useEffect(() => {
         setMounted(true);
         const handleScroll = () => {
@@ -28,26 +34,13 @@ export default function Header() {
         };
         window.addEventListener('scroll', handleScroll);
 
-        // Check Auth using the new SSR-ready client
-        const getUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            setUser(user);
-        };
-        getUser();
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
-        });
-
         return () => {
             window.removeEventListener('scroll', handleScroll);
-            subscription.unsubscribe();
         };
     }, []);
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
-        setUser(null);
     };
 
     return (
@@ -70,18 +63,19 @@ export default function Header() {
                         </span>
                     </Link>
 
-                    {/* CENTER: Pill Navigation */}
-                    <nav className="hidden md:flex items-center gap-1 p-1 rounded-full bg-slate-100/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md">
-                        <Link href="/" className="px-5 py-2 rounded-full text-sm font-bold bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm transition-all hover:scale-105 active:scale-95">
+                    {/* CENTER: Pill Navigation - All Pills with Labels */}
+                    <nav className="hidden md:flex items-center gap-1 p-1.5 rounded-full bg-slate-100/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md">
+                        {/* Voos - Fixed Width Pill */}
+                        <Link href="/" className="w-[120px] text-center py-2 rounded-full text-sm font-medium text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-all hover:bg-white/50 dark:hover:bg-white/5">
                             {labels.flights}
                         </Link>
 
-                        {/* Maya AI Chat Widget */}
-                        <div className="px-1">
-                            <MayaChat />
-                        </div>
+                        {/* Éden AI - Highlighted Purple Pill */}
+                        {/* Éden AI - Highlighted Purple Pill */}
+                        <EdenTriggerButton onClick={() => setIsEdenOpen(!isEdenOpen)} isCollapsed={false} className="w-[120px] py-2" />
 
-                        <Link href="/guide" className="px-5 py-2 rounded-full text-sm font-bold text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white transition-all hover:bg-white/50 dark:hover:bg-white/5">
+                        {/* Experiências - Fixed Width Pill */}
+                        <Link href="/guide" className="w-[120px] text-center py-2 rounded-full text-sm font-medium text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-all hover:bg-white/50 dark:hover:bg-white/5">
                             {labels.experiences}
                         </Link>
                     </nav>
@@ -89,7 +83,7 @@ export default function Header() {
                     {/* RIGHT: User Actions */}
                     <div className="flex items-center gap-4">
                         {/* Admin Tools */}
-                        {user?.email === 'lira.chefs@gmail.com' && (
+                        {(user?.email === 'lira.chefs@gmail.com' || user?.user_metadata?.email === 'lira.chefs@gmail.com') && (
                             <div className="hidden lg:flex items-center gap-2">
                                 <Link href="/admin" className="px-3 py-1 bg-rose-100 dark:bg-rose-600/20 border border-rose-200 dark:border-rose-500/50 text-rose-600 dark:text-rose-500 text-[10px] font-bold tracking-wider rounded-md backdrop-blur-md hover:bg-rose-200 dark:hover:bg-rose-600/30 transition-colors">
                                     ADMIN
@@ -101,8 +95,8 @@ export default function Header() {
                         {user ? (
                             <Link href="/my-trips" className="hidden md:block">
                                 <div className={`flex items-center gap-3 border pl-1 pr-4 py-1 rounded-full shadow-sm transition-all cursor-pointer group ${scrolled ? 'bg-slate-100 dark:bg-white/10 border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/20' : 'bg-black/5 dark:bg-black/40 border-white/20 dark:border-white/10 hover:bg-black/10 dark:hover:bg-black/60 backdrop-blur-md'}`}>
-                                    {user.user_metadata.avatar_url ? (
-                                        <img src={user.user_metadata.avatar_url} alt="Profile" className="w-8 h-8 rounded-full shadow-inner" />
+                                    {(user.user_metadata?.avatar_url || user.user_metadata?.picture) ? (
+                                        <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Profile" className="w-8 h-8 rounded-full shadow-inner object-cover" referrerPolicy="no-referrer" />
                                     ) : (
                                         <div className="w-8 h-8 rounded-full bg-gradient-to-r from-rose-500 to-orange-500 text-white flex items-center justify-center font-bold text-xs shadow-inner">
                                             {user.email?.[0].toUpperCase()}
@@ -207,12 +201,49 @@ export default function Header() {
                                 <Link href="/guide" className="text-xl font-bold text-slate-500 dark:text-gray-400" onClick={() => setMobileMenuOpen(false)}>
                                     {labels.experiences}
                                 </Link>
+                                <button
+                                    onClick={() => { setMobileMenuOpen(false); setIsEdenOpen(true); }}
+                                    className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 flex items-center gap-2"
+                                >
+                                    <span>🌍</span> Falar com Éden
+                                </button>
                                 {user && (
                                     <Link href="/my-trips" className="text-xl font-bold text-slate-500 dark:text-gray-400" onClick={() => setMobileMenuOpen(false)}>
                                         Minhas Viagens
                                     </Link>
                                 )}
                             </nav>
+
+                            <div className="h-px bg-slate-200 dark:bg-white/10" />
+
+                            {/* Language & Currency Selector for Mobile */}
+                            <div className="flex flex-col gap-3">
+                                <p className="text-xs font-bold text-slate-400 dark:text-gray-500 flex items-center gap-2">
+                                    <Globe className="w-4 h-4" /> IDIOMA & MOEDA
+                                </p>
+                                <div className="flex gap-2 flex-wrap">
+                                    {['pt', 'en', 'es'].map((lang) => (
+                                        <button
+                                            key={lang}
+                                            onClick={() => setLanguage(lang as any)}
+                                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${language === lang ? 'bg-rose-500 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-gray-300'}`}
+                                        >
+                                            {lang.toUpperCase()}
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="flex gap-2 flex-wrap">
+                                    {['EUR', 'USD', 'BRL'].map((curr) => (
+                                        <button
+                                            key={curr}
+                                            onClick={() => setCurrency(curr as any)}
+                                            className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${currency === curr ? 'bg-rose-500 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-gray-300'}`}
+                                        >
+                                            {curr}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
 
                             <div className="h-px bg-slate-200 dark:bg-white/10" />
 
@@ -238,6 +269,12 @@ export default function Header() {
                     </div>
                 )
             }
+            {/* Persistent Global Chat Instance */}
+            <MayaChat
+                hideTrigger={true}
+                isOpen={isEdenOpen}
+                onOpenChange={setIsEdenOpen}
+            />
         </>
     );
 }

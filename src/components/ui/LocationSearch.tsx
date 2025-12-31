@@ -73,10 +73,10 @@ export default function LocationSearch({ label, placeholder, value, onChange, va
         input: "text-white placeholder:text-gray-500",
         icon: "text-rose-500"
     } : {
-        container: "bg-gray-50 hover:bg-gray-100 border-transparent text-gray-900",
-        label: "text-gray-400",
-        input: "text-gray-900 placeholder:text-gray-300",
-        icon: "text-gray-400"
+        container: "bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 border-transparent dark:border-white/5 text-gray-900 dark:text-gray-100",
+        label: "text-gray-400 dark:text-gray-500",
+        input: "text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-500",
+        icon: "text-gray-400 dark:text-gray-500"
     };
 
     return (
@@ -84,7 +84,7 @@ export default function LocationSearch({ label, placeholder, value, onChange, va
             <div className={`absolute left-4 top-1/2 -translate-y-1/2 ${styles.icon}`}>
                 <MapPin className="w-5 h-5" />
             </div>
-            <div className={`${styles.container} transition-colors rounded-xl px-12 py-3 text-left w-full h-full cursor-pointer border hover:border-gray-200 relative z-10`}>
+            <div className={`${styles.container} transition-colors rounded-xl px-12 py-3 text-left w-full h-full cursor-pointer border hover:border-gray-200 dark:hover:border-white/20 relative z-10`}>
                 <span className={`block text-[10px] font-bold uppercase tracking-wider ${styles.label}`}>{label}</span>
                 <input
                     type="text"
@@ -113,19 +113,19 @@ export default function LocationSearch({ label, placeholder, value, onChange, va
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="absolute top-full left-0 right-0 mt-2 bg-[#0B0F19] border border-white/10 rounded-xl shadow-2xl z-[9999] max-h-60 overflow-y-auto backdrop-blur-3xl text-left"
+                        className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#0B0F19] border border-slate-100 dark:border-white/10 rounded-xl shadow-2xl z-[9999] max-h-60 overflow-y-auto backdrop-blur-3xl text-left"
                     >
                         {results.map((result: any) => (
                             <div
                                 key={result.id}
                                 onClick={() => handleSelect(result.iata_code, result.city_name || result.name)}
-                                className="px-4 py-3 hover:bg-white/10 cursor-pointer flex items-center justify-between group/item"
+                                className="px-4 py-3 hover:bg-slate-50 dark:hover:bg-white/10 cursor-pointer flex items-center justify-between group/item transition-colors"
                             >
                                 <div>
-                                    <div className="font-bold text-white text-sm">
+                                    <div className="font-bold text-slate-900 dark:text-white text-sm">
                                         {result.city_name || result.name}
                                     </div>
-                                    <div className="text-xs text-gray-400">
+                                    <div className="text-xs text-slate-500 dark:text-gray-400">
                                         {result.name}
                                     </div>
                                 </div>

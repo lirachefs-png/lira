@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import Header from '@/components/layout/Header';
+
 import { GUIDE_CITIES } from '@/lib/guide-cities';
 import { Star, ArrowRight } from 'lucide-react';
 
@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 
 export default function GuidePage() {
     return (
-        <main className="min-h-screen bg-[#0B0F19]">
-            <Header />
+        <main className="min-h-screen bg-white dark:bg-[#0B0F19] transition-colors duration-300">
+
 
             {/* Hero Section */}
             <section className="pt-32 pb-16 px-4">
@@ -24,10 +24,10 @@ export default function GuidePage() {
                         <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
                     </div>
 
-                    <h1 className="text-4xl md:text-6xl font-black text-white mb-4">
+                    <h1 className="text-4xl md:text-6xl font-black text-slate-900 dark:text-white mb-4">
                         Curadoria Premium
                     </h1>
-                    <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+                    <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                         Gastronomia, vida noturna, lazer e aventura — selecionados pelos nossos especialistas.
                     </p>
                 </div>

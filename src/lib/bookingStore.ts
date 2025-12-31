@@ -8,17 +8,24 @@ export async function createBooking(
     userEmail: string | null = null,
     amount: number = 0,
     currency: string = 'EUR',
-    passengerData: any = {}
+    passengerData: any = {},
+    bookingReference: string | null = null
 ) {
     const supabase = await createClient();
-    await supabase.from("bookings").insert({
-        stripe_session_id: sessionId,
+    const result = await supabase.from("bookings").insert({
+        transaction_id: sessionId, // PaymentIntent ID or session ID
         state: state,
         user_email: userEmail,
         amount_total: amount,
         currency: currency,
-        passenger_data: passengerData
+        passenger_data: passengerData,
+        booking_reference: bookingReference
     });
+
+    if (result.error) {
+        console.error("❌ createBooking error:", result.error);
+    }
+    return result;
 }
 
 export async function updateBooking(sessionId: string, data: {
@@ -34,12 +41,12 @@ export async function updateBooking(sessionId: string, data: {
         offer_id: data.offerId,
         booking_reference: data.bookingReference,
         // error: data.error, // Add error column to DB if needed, currently not in SQL but useful
-    }).eq("stripe_session_id", sessionId);
+    }).eq("transaction_id", sessionId);
 }
 
 export async function getBooking(sessionId: string) {
     const supabase = await createClient();
-    const { data } = await supabase.from("bookings").select("*").eq("stripe_session_id", sessionId).single();
+    const { data } = await supabase.from("bookings").select("*").eq("transaction_id", sessionId).single();
 
     if (!data) return null;
 

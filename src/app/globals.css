@@ -98,3 +98,81 @@
     color: var(--foreground);
   }
 }
+
+/* ================================================
+   KEN BURNS HERO SLIDER - Cinematic Photo Effect
+   ================================================ */
+
+/* 1. Container */
+.hero-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 2. Individual Slides */
+.slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  /* Dual animation: Cross-fade + Ken Burns zoom */
+  animation: fadeSlides 48s infinite, kenBurns 48s infinite;
+}
+
+/* 3. Timing for 6 photos (8 seconds each = 48s total) */
+.slide-1 {
+  animation-delay: 0s;
+}
+
+.slide-2 {
+  animation-delay: 8s;
+}
+
+.slide-3 {
+  animation-delay: 16s;
+}
+
+.slide-4 {
+  animation-delay: 24s;
+}
+
+.slide-5 {
+  animation-delay: 32s;
+}
+
+.slide-6 {
+  animation-delay: 40s;
+}
+
+/* ANIMATION 1: Cross-fade between slides */
+@keyframes fadeSlides {
+
+  0%,
+  16.66%,
+  100% {
+    opacity: 0;
+  }
+
+  2.5%,
+  14.16% {
+    opacity: 1;
+  }
+}
+
+/* ANIMATION 2: Ken Burns slow zoom effect */
+@keyframes kenBurns {
+  0% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(1.15);
+    /* Slow 15% zoom */
+  }
+}

@@ -12,9 +12,9 @@ export const SITE_CONFIG = {
             destination: 'https://images.unsplash.com/photo-1503220317375-aaad61436b1b?auto=format&fit=crop&w=800&q=80'
         }
     },
-    stripe: {
+    payment: {
         currency: 'eur',
-        paymentMethods: ['card', 'mb_way', 'multibanco'] as Array<'card' | 'mb_way' | 'multibanco'>,
+        provider: 'duffel',
     },
     airlines: {
         partners: ['LA', 'AD', 'G3', 'TP', 'AA', 'UA', 'AF']

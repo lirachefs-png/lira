@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import Header from '@/components/layout/Header';
+
 import { getCityBySlug, GUIDE_CITIES } from '@/lib/guide-cities';
 import { generateCityGuide } from '@/app/actions/generate-guide';
 import { Star, ArrowLeft, MapPin, Plane } from 'lucide-react';
@@ -43,8 +43,8 @@ export default async function CityGuidePage({ params }: PageProps) {
     const guideContent = await generateCityGuide(city.name, city.country);
 
     return (
-        <main className="min-h-screen bg-[#0B0F19]">
-            <Header />
+        <main className="min-h-screen bg-white dark:bg-[#0B0F19] transition-colors duration-300">
+
 
             {/* Hero */}
             <section className="relative h-[60vh] min-h-[400px]">
@@ -56,7 +56,7 @@ export default async function CityGuidePage({ params }: PageProps) {
                     priority
                 />
                 {/* Stronger gradient for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19] via-[#0B0F19]/80 to-black/40" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
                     <div className="max-w-7xl mx-auto">
@@ -111,14 +111,14 @@ export default async function CityGuidePage({ params }: PageProps) {
                         <div key={category.name} className="mb-16">
                             <div className="flex items-center gap-3 mb-8">
                                 <span className="text-3xl">{category.icon}</span>
-                                <h2 className="text-3xl font-bold text-white">{category.name}</h2>
+                                <h2 className="text-3xl font-bold text-slate-900 dark:text-white">{category.name}</h2>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {category.places.map((place, placeIdx) => (
                                     <div
                                         key={placeIdx}
-                                        className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors"
+                                        className="bg-slate-50 dark:bg-white/5 backdrop-blur-sm border border-slate-200 dark:border-white/10 rounded-2xl p-6 hover:bg-slate-100 dark:hover:bg-white/10 transition-all group"
                                     >
                                         {/* Rating */}
                                         <div className="flex gap-0.5 mb-3">
@@ -130,13 +130,13 @@ export default async function CityGuidePage({ params }: PageProps) {
                                             ))}
                                         </div>
 
-                                        <h3 className="text-xl font-bold text-white mb-2">{place.name}</h3>
-                                        <p className="text-gray-400 text-sm mb-4">{place.description}</p>
+                                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{place.name}</h3>
+                                        <p className="text-slate-600 dark:text-gray-400 text-sm mb-4">{place.description}</p>
 
                                         {/* Tip */}
-                                        <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2">
-                                            <span className="text-amber-400 text-xs font-bold">💡 DICA:</span>
-                                            <p className="text-amber-200/80 text-sm mt-1">{place.tip}</p>
+                                        <div className="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-lg px-3 py-2">
+                                            <span className="text-amber-600 dark:text-amber-400 text-xs font-bold">💡 DICA:</span>
+                                            <p className="text-amber-800 dark:text-amber-200/80 text-sm mt-1">{place.tip}</p>
                                         </div>
                                     </div>
                                 ))}

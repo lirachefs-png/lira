@@ -6,7 +6,7 @@ import { useState } from 'react';
 interface AirlineLogoProps {
     iataCode: string;
     name: string;
-    size?: 'sm' | 'md' | 'lg';
+    size?: 'sm' | 'md' | 'lg' | 'xl';
     variant?: 'symbol' | 'lockup';
 }
 
@@ -31,7 +31,8 @@ export default function AirlineLogo({
     const sizeClasses = {
         sm: 'h-6 w-6',
         md: 'h-10 w-10',
-        lg: 'h-14 w-14'
+        lg: 'h-14 w-14',
+        xl: 'h-20 w-20'
     };
 
     if (hasError) {
@@ -44,7 +45,7 @@ export default function AirlineLogo({
     }
 
     return (
-        <div className={`relative ${sizeClasses[size]} overflow-hidden rounded-lg bg-white dark:bg-white/10 flex items-center justify-center p-1`}>
+        <div className={`relative ${sizeClasses[size]} overflow-hidden rounded-lg bg-white flex items-center justify-center p-1`}>
             <Image
                 src={logoUrl}
                 alt={`Logo da ${name}`}

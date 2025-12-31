@@ -9,6 +9,10 @@ const transporter = nodemailer.createTransport({
         user: process.env.ZOHO_EMAIL,
         pass: process.env.ZOHO_PASSWORD,
     },
+    tls: {
+        // Fix for "self-signed certificate in certificate chain" error
+        rejectUnauthorized: false
+    }
 });
 
 interface BookingEmailData {
@@ -101,7 +105,7 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
             <p style="color: #6B7280; font-size: 12px; margin: 0 0 8px 0;">Precisa de ajuda?</p>
             <a href="mailto:contato@alltripapp.com" style="color: #6366F1; font-size: 12px;">contato@alltripapp.com</a>
             <p style="color: #4B5563; font-size: 11px; margin: 24px 0 0 0;">
-                © 2024 AllTrip. Todos os direitos reservados.
+                © 2025 AllTrip. Todos os direitos reservados.
             </p>
         </div>
     </div>

@@ -12,10 +12,10 @@ export const metadata: Metadata = {
 export default function SearchPage() {
     return (
         <Suspense fallback={
-            <div className="flex h-screen items-center justify-center bg-slate-950 text-white">
+            <div className="flex h-screen items-center justify-center bg-white dark:bg-slate-950 text-slate-900 dark:text-white">
                 <div className="flex flex-col items-center gap-4">
                     <Loader2 className="w-10 h-10 animate-spin text-rose-500" />
-                    <p className="text-sm font-medium text-slate-400">Carregando busca...</p>
+                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Carregando busca...</p>
                 </div>
             </div>
         }>

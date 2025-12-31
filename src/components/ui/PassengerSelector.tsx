@@ -47,22 +47,16 @@ export default function PassengerSelector({ passengers, setPassengers, cabin, se
     const totalPassengers = passengers.adults + passengers.children + passengers.infants;
 
     const getSummary = () => {
-        const travelerText = totalPassengers === 1 ? 'Viajante' : 'Viajantes';
-        const cabinText = {
-            'economy': 'Econômica',
-            'premium_economy': 'Premium Econ.',
-            'business': 'Executiva',
-            'first': 'Primeira'
-        }[cabin] || 'Econômica';
-
+        const travelerText = totalPassengers === 1 ? labels.passenger_selector.traveler : labels.passenger_selector.travelers;
+        const cabinText = labels.passenger_selector.cabin[cabin as keyof typeof labels.passenger_selector.cabin] || labels.passenger_selector.cabin.economy;
         return `${totalPassengers} ${travelerText}, ${cabinText}`;
     };
 
     const CABIN_OPTIONS = [
-        { value: 'economy', label: 'Econômica' },
-        { value: 'premium_economy', label: 'Premium Economy' },
-        { value: 'business', label: 'Executiva' },
-        { value: 'first', label: 'Primeira Classe' }
+        { value: 'economy', label: labels.passenger_selector.cabin.economy },
+        { value: 'premium_economy', label: labels.passenger_selector.cabin.premium_economy },
+        { value: 'business', label: labels.passenger_selector.cabin.business },
+        { value: 'first', label: labels.passenger_selector.cabin.first }
     ];
 
     return (
@@ -84,7 +78,7 @@ export default function PassengerSelector({ passengers, setPassengers, cabin, se
                     className="flex flex-col items-start p-2 hover:bg-slate-50 rounded-lg transition-colors w-full sm:w-auto min-w-[180px]"
                 >
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1 px-1">
-                        Passageiros e Classe
+                        {labels.passenger_selector.label}
                     </span>
                     <div className="flex items-center gap-2 px-1">
                         <User className="w-5 h-5 text-slate-400" />
@@ -111,8 +105,8 @@ export default function PassengerSelector({ passengers, setPassengers, cabin, se
                             {/* Adults */}
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="font-bold text-slate-900">Adultos</p>
-                                    <p className="text-xs text-slate-500">12+ anos</p>
+                                    <p className="font-bold text-slate-900 dark:text-white">{labels.passenger_selector.adults}</p>
+                                    <p className="text-xs text-slate-500">{labels.passenger_selector.adults_desc}</p>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <button
@@ -135,8 +129,8 @@ export default function PassengerSelector({ passengers, setPassengers, cabin, se
                             {/* Children */}
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="font-bold text-slate-900">Crianças</p>
-                                    <p className="text-xs text-slate-500">2-11 anos</p>
+                                    <p className="font-bold text-slate-900 dark:text-white">{labels.passenger_selector.children}</p>
+                                    <p className="text-xs text-slate-500">{labels.passenger_selector.children_desc}</p>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <button
@@ -159,8 +153,8 @@ export default function PassengerSelector({ passengers, setPassengers, cabin, se
                             {/* Infants */}
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="font-bold text-slate-900">Bebês</p>
-                                    <p className="text-xs text-slate-500">0-2 anos</p>
+                                    <p className="font-bold text-slate-900 dark:text-white">{labels.passenger_selector.infants}</p>
+                                    <p className="text-xs text-slate-500">{labels.passenger_selector.infants_desc}</p>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <button
@@ -185,8 +179,8 @@ export default function PassengerSelector({ passengers, setPassengers, cabin, se
 
                         {/* Cabin Class Selection */}
                         <div>
-                            <p className="font-bold text-slate-900 mb-3 flex items-center gap-2">
-                                <Armchair className="w-4 h-4 text-slate-400" /> Classe
+                            <p className="font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                                <Armchair className="w-4 h-4 text-slate-400" /> {labels.passenger_selector.cabin.economy.includes(' ') ? labels.passenger_selector.cabin.economy.split(' ')[0] : 'Classe'}
                             </p>
                             <div className="grid grid-cols-1 gap-2">
                                 {CABIN_OPTIONS.map(option => (

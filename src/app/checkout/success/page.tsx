@@ -35,51 +35,12 @@ function SuccessContent() {
             return;
         }
 
-        // --- STRIPE FLOW LOGIC ---
-        if (!sessionId) return;
-
-        const startTime = Date.now();
-        const timeoutMs = 60000; // 60s timeout
-
-        const checkStatus = async () => {
-            try {
-                // Use verify endpoint which has fallback logic for localhost
-                const res = await fetch(`/api/checkout/verify?session_id=${sessionId}`, { cache: "no-store" });
-                const data = await res.json();
-
-                if (data.state === 'confirmed') {
-                    setStatus('confirmed');
-                    setBookingDetails({ orderId: data.offerId, ref: data.bookingReference });
-                    return true; // stop polling
-                } else if (data.state === 'failed') {
-                    setStatus('error');
-                    return true; // stop polling
-                }
-                return false; // continue polling
-            } catch (e) {
-                console.error(e);
-                // Don't stop polling on network error immediately, unless timeout
-                return false;
-            }
-        };
-
-        const interval = setInterval(async () => {
-            if (Date.now() - startTime > timeoutMs) {
-                setStatus('timeout');
-                clearInterval(interval);
-                return;
-            }
-
-            const stopped = await checkStatus();
-            if (stopped) {
-                clearInterval(interval);
-            }
-        }, 1500); // Poll every 1.5s
-
-        // Initial check
-        checkStatus();
-
-        return () => clearInterval(interval);
+        // If we have a session_id but no mode, it's a legacy flow - show as processing
+        // This should not happen anymore with Duffel Payments
+        if (sessionId) {
+            setStatus('processing');
+            setBookingDetails({ ref: 'PROCESSING' });
+        }
     }, [sessionId, mode, bookingRef, orderId]);
 
     // Valid if we have session_id (Stripe), mode=hold, or mode=paid with booking_ref
@@ -94,16 +55,21 @@ function SuccessContent() {
     }
 
     const isHold = status === 'hold_confirmed';
+
+    // Build personalized Maya context with booking details
+    const currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const displayBookingRef = bookingDetails.ref || bookingRef || 'PENDING';
+
     const mayaContext = isHold
-        ? `Consegui! O teu lugar no voo da American Airlines está reservado. Tens até às ${new Date(expiresAt || '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} para garantir este preço antes que a companhia o liberte novamente.`
-        : "Parabéns! Sua viagem está confirmada. Deseje uma ótima viagem ao cliente.";
+        ? `Consegui! O teu lugar no voo está reservado com a referência ${displayBookingRef}. Tens até às ${new Date(expiresAt || '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} para garantir este preço. O email de confirmação foi enviado!`
+        : `🎉 Parabéns! A tua viagem está CONFIRMADA! Referência: ${displayBookingRef}. Enviámos o email de confirmação às ${currentTime}. Guarda bem este código - vais precisar dele no aeroporto. Boa viagem! ✈️`;
 
     return (
         <div className="min-h-screen bg-[#0B0F19] text-white flex flex-col items-center justify-center p-4 relative">
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay pointer-events-none"></div>
 
-            {/* Maya Context */}
-            <MayaChat isCollapsed={true} contextPrompt={mayaContext} />
+            {/* Maya Context - Auto Open on Success */}
+            <MayaChat isCollapsed={false} contextPrompt={mayaContext} />
 
             <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}

@@ -13,9 +13,9 @@ export default function CheckoutPage() {
 
     if (!hasMounted) {
         return (
-            <div className="min-h-screen bg-[#0B0F19] text-white flex flex-col items-center justify-center gap-4">
+            <div className="min-h-screen bg-white dark:bg-[#0B0F19] text-slate-900 dark:text-white flex flex-col items-center justify-center gap-4 transition-colors">
                 <div className="animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full"></div>
-                <p className="text-gray-400">Loading checkout...</p>
+                <p className="text-slate-500 dark:text-gray-400">Loading checkout...</p>
             </div>
         );
     }

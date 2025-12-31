@@ -68,7 +68,7 @@ export default function OfferConditions({ conditions, compact = false }: OfferCo
     return (
         <div className={`flex ${compact ? 'gap-3' : 'gap-4'} items-center`}>
             {renderCondition('refund', conditions?.refund_before_departure)}
-            <div className="w-[1px] h-3 bg-white/10"></div>
+            <div className="w-[1px] h-3 bg-slate-200 dark:bg-white/10"></div>
             {renderCondition('change', conditions?.change_before_departure)}
         </div>
     );

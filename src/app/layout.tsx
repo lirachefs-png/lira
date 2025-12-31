@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { clsx } from "clsx";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://alltrip.aero'),
   title: {
     default: "AllTrip - Passagens Aéreas com Preços Secretos",
     template: "%s | AllTrip"
@@ -17,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    url: "https://alltrip.com",
+    url: "https://alltrip.aero",
     siteName: "AllTrip",
     title: "AllTrip - Passagens Aéreas com Preços Secretos",
     description: "Desbloqueie ofertas secretas de voos que as companhias aéreas não querem que você veja.",
@@ -47,6 +49,9 @@ export const metadata: Metadata = {
 import { ThemeProvider } from "@/components/theme-provider";
 import { RegionProvider } from "@/contexts/RegionContext";
 import Footer from "@/components/layout/Footer";
+import Header from "@/components/layout/Header";
+
+import AuthProvider from "@/components/auth/AuthProvider";
 
 export default function RootLayout({
   children,
@@ -56,13 +61,25 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={clsx(outfit.className, "antialiased")}>
-        <RegionProvider>
-          <ThemeProvider>
-            {children}
-            <Footer />
-          </ThemeProvider>
-        </RegionProvider>
+        <AuthProvider>
+          <RegionProvider>
+            <ThemeProvider>
+              <Header />
+              {children}
+              <Footer />
+            </ThemeProvider>
+          </RegionProvider>
+        </AuthProvider>
+
+        {/* Duffel Assistant - Trip Management & Support Chat */}
+        <Script
+          src="https://assets.duffel.com/assistant/custom-element.js"
+          strategy="afterInteractive"
+        />
+        {/* @ts-expect-error Custom element from Duffel */}
+        <duffel-assistant></duffel-assistant>
       </body>
     </html>
   );
 }
+

@@ -16,8 +16,11 @@ export async function POST(request: Request) {
         console.log('Creating PaymentIntent for offer:', offerId, 'Amount:', amount, currency);
 
         // Create PaymentIntent via Duffel API
+        // Amount must have exactly 2 decimal places (e.g., "123.45")
+        const formattedAmount = parseFloat(amount).toFixed(2);
+
         const paymentIntent = await duffel.paymentIntents.create({
-            amount: amount.toString(),
+            amount: formattedAmount,
             currency: currency.toUpperCase(),
         });
 
