@@ -603,12 +603,30 @@ REGRAS GERAIS:
 
         // --- AGENT LOOP (ReAct-like) ---
         // 1. First Call to LLM
-        let completion = await groq.chat.completions.create({
+        // Use faster model for Vercel Hobby limits
+        const modelName = "llama-3.1-8b-instant"; // Updated: llama3-8b was decommissioned
+
+        const completionPromise = groq.chat.completions.create({
             messages: [systemPrompt, ...messages],
-            model: "llama-3.3-70b-versatile",
+            model: modelName,
             temperature: 0.6,
             max_tokens: 600,
         });
+
+        // Timeout Protection for Maya
+        const timeoutPromise = new Promise<any>((_, reject) =>
+            setTimeout(() => reject(new Error('MAYA_TIMEOUT')), 9500)
+        );
+
+        let completion;
+        try {
+            completion = await Promise.race([completionPromise, timeoutPromise]);
+        } catch (raceError: any) {
+            if (raceError.message === 'MAYA_TIMEOUT') {
+                return "**Maya:** Estou pensando muito e o tempo acabou... Pode perguntar algo mais simples?";
+            }
+            throw raceError;
+        }
 
         let aiResponse = completion.choices[0]?.message?.content || "Desculpe, sem sinal.";
 

@@ -50,7 +50,7 @@ export async function GET(request: Request) {
     const fareType = searchParams.get('fare_type');
     const privateFaresStr = searchParams.get('private_fares');
     const flexible = searchParams.get('flexible') === 'true';
-    const supplierTimeout = parseInt(searchParams.get('supplier_timeout') || '20000');
+    const supplierTimeout = parseInt(searchParams.get('supplier_timeout') || '9000'); // Reduced to 9s to fit Vercel Hobby 10s limit
 
     try {
         // Parse private fares if provided
@@ -218,7 +218,7 @@ export async function GET(request: Request) {
         console.log('  Base Slices:', JSON.stringify(baseSlices, null, 2));
         console.log('  Async Mode:', isAsync);
 
-        const result: any = await searchForDate(
+        const searchPromise = searchForDate(
             baseSlices,
             passengersPayload,
             cabin,
@@ -227,6 +227,27 @@ export async function GET(request: Request) {
             supplierTimeout,
             isAsync
         );
+
+        // VERCEL HOBBY TIMEOUT PROTECTION (Hard limit at 9.5s to avoid 504 Gateway Timeout)
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('SEARCH_TIMEOUT')), 9500)
+        );
+
+        let result: any;
+        try {
+            result = await Promise.race([searchPromise, timeoutPromise]);
+        } catch (raceError: any) {
+            if (raceError.message === 'SEARCH_TIMEOUT') {
+                console.warn('⚠️ Search timed out (Vercel Limit Protection). Returning partial/error.');
+                // In a perfect world, we would return partial results here if available.
+                // For now, let's return a friendly error so frontend doesn't hang forever.
+                return NextResponse.json(
+                    { error: 'A busca demorou muito. Tente novamente ou simplifique a pesquisa.' },
+                    { status: 408 } // Request Timeout
+                );
+            }
+            throw raceError;
+        }
 
         // If async, return the search ID
         if (isAsync && result.async) {

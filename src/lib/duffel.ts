@@ -1,11 +1,19 @@
 import { Duffel } from '@duffel/api';
 
-const token = process.env.DUFFEL_ACCESS_TOKEN;
+// Sanitize token: Remove newlines, carriage returns, spaces, and other invisible characters
+// This fixes "is not a legal HTTP header value" errors from badly pasted env vars in Vercel
+const rawToken = process.env.DUFFEL_ACCESS_TOKEN || "";
+const token = rawToken.replace(/[\n\r\s\t\u00A0\u200B\u2028\u2029]/g, '').trim();
+
 // Debug initialization to catch Vercel env var issues
 if (!token) {
     console.error("❌ CRITICAL: DUFFEL_ACCESS_TOKEN is missing in environment variables!");
 } else {
-    console.log(`✅ Duffel Client Initialized with token starting: ${token.substring(0, 5)}...`);
+    console.log(`✅ Duffel Client Initialized with token starting: ${token.substring(0, 15)}...`);
+    // Warn if sanitization removed characters
+    if (rawToken.length !== token.length) {
+        console.warn(`⚠️ WARNING: Duffel token had ${rawToken.length - token.length} invalid characters removed!`);
+    }
 }
 
 export const duffel = new Duffel({

@@ -236,7 +236,8 @@ export default function MayaChat({ isCollapsed, contextPrompt, isOpen: controlle
         scrollToBottom();
     }, [messages, isOpen]);
 
-    // Check for Hot Deals on Mount
+    // Check for Hot Deals on Mount - DISABLED PER USER REQUEST
+    /*
     useEffect(() => {
         const checkDeals = async () => {
             if (messages.length > 0) return; // Only if empty
@@ -289,6 +290,7 @@ export default function MayaChat({ isCollapsed, contextPrompt, isOpen: controlle
         };
         checkDeals();
     }, []);
+    */
 
     // Initialize Web Speech API
     useEffect(() => {
@@ -763,12 +765,17 @@ export default function MayaChat({ isCollapsed, contextPrompt, isOpen: controlle
                     {/* Input Area - Glass Style */}
                     <form onSubmit={handleSendMessage} className="p-3 bg-black/30 backdrop-blur-md border-t border-white/10 flex gap-2 items-center">
                         <div className="relative flex-1">
-                            <input
-                                type="text"
+                            <textarea
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                                 placeholder={isRecording ? "Éden está ouvindo..." : "Diz o que você quer..."}
-                                className={`w-full bg-white/10 border border-white/10 rounded-full px-4 py-3 text-sm text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 focus:outline-none placeholder-white/40 pr-10 transition-all ${isRecording ? 'ring-2 ring-rose-500/50 border-rose-500/50' : ''}`}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        handleSendMessage();
+                                    }
+                                }}
+                                className={`w-full bg-white/10 border border-white/10 rounded-3xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 focus:outline-none placeholder-white/40 pr-10 transition-all resize-none h-[50px] scrollbar-hide ${isRecording ? 'ring-2 ring-rose-500/50 border-rose-500/50' : ''}`}
                             />
                             <button
                                 type="button"
