@@ -1,9 +1,7 @@
 'use client';
 
 import { User } from '@supabase/supabase-js';
-import { Plane, MapPin, Calendar, TrendingUp, Sparkles } from 'lucide-react';
-import MayaInterviewModal from './MayaInterviewModal';
-import { useState } from 'react';
+import { Plane, MapPin, Calendar, TrendingUp } from 'lucide-react';
 
 interface UserProfileCardProps {
     user: User;
@@ -13,7 +11,6 @@ interface UserProfileCardProps {
 export default function UserProfileCard({ user, bookings }: UserProfileCardProps) {
     const confirmedBookings = bookings.filter(b => b.state === 'confirmed');
     const totalSpent = bookings.reduce((acc, b) => acc + (b.amount_total || 0), 0) / 100;
-    const [isInterviewOpen, setIsInterviewOpen] = useState(false);
 
     const persona = user.user_metadata?.persona;
     const isPersonaComplete = !!persona?.last_interview_at;
@@ -72,20 +69,6 @@ export default function UserProfileCard({ user, bookings }: UserProfileCardProps
                             <span>{level.name}</span>
                         </div>
                     </div>
-
-                    {/* Interview Button */}
-                    <div className="ml-auto">
-                        <button
-                            onClick={() => setIsInterviewOpen(true)}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-full font-bold text-sm transition-all hover:scale-105 active:scale-95 shadow-lg ${isPersonaComplete
-                                ? 'bg-white/10 text-white/90 border border-white/20'
-                                : 'bg-white text-indigo-600 shadow-white/20'
-                                }`}
-                        >
-                            <Sparkles className={`w-4 h-4 ${!isPersonaComplete && 'animate-pulse'}`} />
-                            {isPersonaComplete ? 'Atualizar Perfil com a Maya' : 'Entrevista com a Maya'}
-                        </button>
-                    </div>
                 </div>
 
                 {/* Stats Grid */}
@@ -123,11 +106,6 @@ export default function UserProfileCard({ user, bookings }: UserProfileCardProps
                     </div>
                 </div>
             </div>
-
-            <MayaInterviewModal
-                isOpen={isInterviewOpen}
-                onClose={() => setIsInterviewOpen(false)}
-            />
         </div>
     );
 }

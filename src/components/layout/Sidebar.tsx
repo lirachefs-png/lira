@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 import { useTheme } from "next-themes";
-import MayaChat from "@/components/MayaChat";
 import { useRegion } from "@/contexts/RegionContext";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { cn } from "@/lib/utils"; // Ensure you have this utility or use template literals
@@ -93,10 +92,12 @@ export default function Sidebar() {
 
                 <div className="pt-4">
                     {!isCollapsed && <div className="text-[10px] font-bold text-slate-400 dark:text-gray-500 px-4 mb-4 tracking-widest uppercase transition-opacity duration-300">Ferramentas</div>}
-                    {/* Maya - Embedded nicely */}
-                    <div className={cn("transition-all", isCollapsed ? "flex justify-center" : "px-4")}>
-                        <MayaChat isCollapsed={isCollapsed} />
-                    </div>
+                    <Link href="/guide" className={cn("flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all hover:translate-x-1",
+                        "text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5",
+                        isCollapsed ? "justify-center px-0" : "")}>
+                        <Globe className="w-5 h-5 shrink-0" />
+                        {!isCollapsed && <span>Guia de Viagens</span>}
+                    </Link>
                 </div>
 
                 {/* Admin Links */}

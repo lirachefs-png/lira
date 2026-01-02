@@ -5,7 +5,6 @@ import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Plane, Globe2, Zap, X } from 'lucide-react';
 import Link from 'next/link';
-import MayaChat from '@/components/MayaChat';
 
 // Dynamic import to avoid SSR issues with Three.js
 const Globe = dynamic(() => import('react-globe.gl'), { ssr: false });
@@ -704,32 +703,7 @@ export default function EnginePage() {
                     />
                 </motion.div>
             </div>
-            {/* Maya Chat - Dynamic Context */}
-            {(() => {
-                const mayaContextPrompt = (() => {
-                    if (selectedAircraft) {
-                        return `🛫 Você está vendo o voo ${selectedAircraft.callsign || 'desconhecido'} de ${selectedAircraft.country}. Altitude: ${Math.round(selectedAircraft.altitude)}m, Velocidade: ${selectedAircraft.velocity || '?'} km/h.\n\nQuer saber mais sobre esta rota ou destino?`;
-                    }
-                    if (selectedDeal) {
-                        return `✨ ${selectedDeal.city}, ${selectedDeal.country} por apenas ${selectedDeal.currency}${selectedDeal.price}!\n\nPosso ajudar com:\n• Melhor época para visitar\n• O que fazer em ${selectedDeal.city}\n• Dicas de viagem`;
-                    }
-                    if (flightArc.length > 0 && !isSearching) {
-                        return `✈️ Rota ${originCode} → ${destCode} traçada!\n\nQuer dicas sobre este destino ou ajuda para planejar sua viagem?`;
-                    }
-                    return `🌍 Bem-vindo ao The Engine!\n\nExplore destinos no globo ou me pergunte sobre:\n• Destinos económicos\n• Melhor época para viajar\n• Dicas de viagem`;
-                })();
 
-                return (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5 }}
-                        className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50"
-                    >
-                        <MayaChat contextPrompt={mayaContextPrompt} />
-                    </motion.div>
-                );
-            })()}
 
             {/* Selected Aircraft Info Panel - Left Side */}
             <AnimatePresence>

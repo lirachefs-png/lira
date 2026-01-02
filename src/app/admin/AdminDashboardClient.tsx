@@ -34,7 +34,6 @@ import {
     Search
 } from 'lucide-react';
 import { useMemo } from 'react';
-import MayaInsights from './components/MayaInsights';
 
 
 interface AdminDashboardClientProps {
@@ -85,9 +84,6 @@ export default function AdminDashboardClient({ bookings }: AdminDashboardClientP
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
-
-            {/* --- 0. MAYA BRAIN --- */}
-            <MayaInsights bookings={bookings} />
 
             {/* --- 1. SMART ALERT BAR --- */}
             <div className="flex flex-col gap-4">

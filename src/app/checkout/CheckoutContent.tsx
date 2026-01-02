@@ -10,7 +10,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import PassengerForm from '@/components/checkout/PassengerForm';
 import DuffelPaymentForm from '@/components/checkout/DuffelPaymentForm';
-import MayaChat from '@/components/MayaChat';
 import { AIRLINE_CABIN_IMAGES } from '@/lib/airlineImages';
 
 // --- Validation Schema ---
@@ -335,13 +334,8 @@ export default function CheckoutContent() {
     const taxes = basePrice - baseFare;
     const finalTotal = basePrice + servicesTotal;
 
-    // Maya Context
-    const mayaContext = `O cliente está no checkout voando com a ${airlineName} (${aircraftName}) de ${originCode} para ${destinationCode}. Classe: ${cabinClass}. Valor total: ${formatCurrency(finalTotal)}. Dê uma dica curta e luxuosa. Se ele demorar, sugira o 'Hold Price' para garantir o valor.`;
-
     return (
         <main className="min-h-screen bg-slate-50 dark:bg-[#0B0F19] text-slate-900 dark:text-white relative selection:bg-rose-500/30 transition-colors">
-            {/* Proactive Maya */}
-            <MayaChat isCollapsed={true} contextPrompt={mayaContext} />
 
             {/* Seat Map Modal */}
             {showSeatMap && seatMap && (

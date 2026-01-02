@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { CheckCircle, AlertCircle, Loader2, ShieldCheck, Mail, Clock } from 'lucide-react';
 import { Suspense, useEffect, useState } from 'react';
-import MayaChat from '@/components/MayaChat';
 import { HoldCountdown } from '@/components/checkout/HoldCountdown';
 
 function SuccessContent() {
@@ -56,20 +55,11 @@ function SuccessContent() {
 
     const isHold = status === 'hold_confirmed';
 
-    // Build personalized Maya context with booking details
-    const currentTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    const displayBookingRef = bookingDetails.ref || bookingRef || 'PENDING';
-
-    const mayaContext = isHold
-        ? `Consegui! O teu lugar no voo está reservado com a referência ${displayBookingRef}. Tens até às ${new Date(expiresAt || '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} para garantir este preço. O email de confirmação foi enviado!`
-        : `🎉 Parabéns! A tua viagem está CONFIRMADA! Referência: ${displayBookingRef}. Enviámos o email de confirmação às ${currentTime}. Guarda bem este código - vais precisar dele no aeroporto. Boa viagem! ✈️`;
 
     return (
         <div className="min-h-screen bg-[#0B0F19] text-white flex flex-col items-center justify-center p-4 relative">
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay pointer-events-none"></div>
 
-            {/* Maya Context - Auto Open on Success */}
-            <MayaChat isCollapsed={false} contextPrompt={mayaContext} />
 
             <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}

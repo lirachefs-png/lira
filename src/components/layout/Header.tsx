@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { User as SupabaseUser } from "@supabase/supabase-js";
 import { useTheme } from "next-themes";
-import MayaChat, { EdenTriggerButton } from "@/components/MayaChat";
 import { useRegion } from "@/contexts/RegionContext";
 
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -23,9 +22,6 @@ export default function Header() {
     const { language, currency, setLanguage, setCurrency, labels } = useRegion();
     const [showRegionMenu, setShowRegionMenu] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-    // Persistent Éden Chat State (Lifted)
-    const [isEdenOpen, setIsEdenOpen] = useState(false);
 
     useEffect(() => {
         setMounted(true);
@@ -71,8 +67,9 @@ export default function Header() {
                         </Link>
 
                         {/* Éden AI - Highlighted Purple Pill */}
-                        {/* Éden AI - Highlighted Purple Pill */}
-                        <EdenTriggerButton onClick={() => setIsEdenOpen(!isEdenOpen)} isCollapsed={false} className="w-[120px] py-2" />
+                        <Link href="/guide" className="w-[120px] text-center py-2 rounded-full text-sm font-medium bg-gradient-to-r from-purple-600 to-cyan-600 text-white hover:opacity-90 transition-all">
+                            Guia
+                        </Link>
 
                         {/* Experiências - Fixed Width Pill */}
                         <Link href="/guide" className="w-[120px] text-center py-2 rounded-full text-sm font-medium text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-all hover:bg-white/50 dark:hover:bg-white/5">
@@ -201,12 +198,9 @@ export default function Header() {
                                 <Link href="/guide" className="text-xl font-bold text-slate-500 dark:text-gray-400" onClick={() => setMobileMenuOpen(false)}>
                                     {labels.experiences}
                                 </Link>
-                                <button
-                                    onClick={() => { setMobileMenuOpen(false); setIsEdenOpen(true); }}
-                                    className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 flex items-center gap-2"
-                                >
-                                    <span>🌍</span> Falar com Éden
-                                </button>
+                                <Link href="/guide" className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+                                    <span>🌍</span> Guia de Viagens
+                                </Link>
                                 {user && (
                                     <Link href="/my-trips" className="text-xl font-bold text-slate-500 dark:text-gray-400" onClick={() => setMobileMenuOpen(false)}>
                                         Minhas Viagens
@@ -269,12 +263,7 @@ export default function Header() {
                     </div>
                 )
             }
-            {/* Persistent Global Chat Instance */}
-            <MayaChat
-                hideTrigger={true}
-                isOpen={isEdenOpen}
-                onOpenChange={setIsEdenOpen}
-            />
+
         </>
     );
 }
