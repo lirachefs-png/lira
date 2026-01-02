@@ -2,11 +2,7 @@
 
 import { getWeatherForecast } from "@/services/weather";
 
-import Groq from "groq-sdk";
-
-const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY
-});
+import { groq } from "@/lib/groq";
 
 export interface PackingList {
     clothing: string[];
