@@ -31,7 +31,7 @@ export default function SignInPage() {
         if (error) {
             console.error('OAuth error:', error);
             setIsLoading(null);
-            alert(`Erro ao conectar com ${provider}. Tente novamente.`);
+            alert(`Erro ao conectar com ${provider}: ${error.message}`);
         }
     };
 
@@ -46,7 +46,7 @@ export default function SignInPage() {
 
         if (error) {
             console.error('Email login error:', error);
-            alert('Erro ao fazer login. Verifique suas credenciais.');
+            alert(`Erro ao fazer login: ${error.message}`);
             setIsLoading(null);
         } else {
             router.push('/');

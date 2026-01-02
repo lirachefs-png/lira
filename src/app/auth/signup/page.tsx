@@ -31,7 +31,7 @@ export default function SignUpPage() {
 
         if (error) {
             console.error('Signup error:', error);
-            alert('Erro ao criar conta. Tente novamente.');
+            alert(`Erro ao criar conta: ${error.message}`);
             setIsLoading(false);
         } else {
             // Success - check if email confirmation is required

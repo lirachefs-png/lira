@@ -606,7 +606,7 @@ REGRAS GERAIS:
         // --- AGENT LOOP (ReAct-like) ---
         // 1. First Call to LLM
         // Use faster model for Vercel Hobby limits
-        const modelName = "llama-3.1-8b-instant"; // Updated: llama3-8b was decommissioned
+        const modelName = "llama-3.3-70b-versatile"; // Updated to Llama 3.3 70B per user request
 
         const completionPromise = groq.chat.completions.create({
             messages: [systemPrompt, ...messages],
