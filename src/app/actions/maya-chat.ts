@@ -491,9 +491,14 @@ import { retrieveRelevantMemories, storeMemory } from "@/services/memory";
 
 export async function chatWithMaya(messages: ChatMessage[], userTimezone?: string) {
     try {
+        // DEBUG: List environment variables to debug Railway issue
+        const envKeys = Object.keys(process.env).filter(k => !k.includes('SECRET') && !k.includes('KEY'));
+        console.log("🔍 SERVER ENV VARS AVAILABLE:", envKeys.join(', '));
+        console.log("🔍 Checking GROQ_API_KEY directly:", process.env.GROQ_API_KEY ? "EXISTS (Length: " + process.env.GROQ_API_KEY.length + ")" : "MISSING/FALSY");
+
         if (!process.env.GROQ_API_KEY) {
             console.error("❌ GROQ_API_KEY is missing in server environment!");
-            return "**Maya (Offline):** Para ativar a Maya, configure a `GROQ_API_KEY` no seu ambiente.";
+            return "**Maya (Offline):** Para ativar a Maya, configure a `GROQ_API_KEY` no seu ambiente. (Debug: Var missing)";
         }
         console.log("✅ GROQ_API_KEY is present (starts with " + process.env.GROQ_API_KEY.substring(0, 4) + "...)");
 
