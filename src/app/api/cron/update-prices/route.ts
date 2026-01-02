@@ -4,11 +4,11 @@ import { createClient } from '@supabase/supabase-js';
 
 // Initialize Supabase Admin Client (Service Role)
 // We need SERVICE_ROLE_KEY to bypass RLS for writing to the cache without a user session.
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 // Fallback to anon key if service key is missing (Local Dev usually works with anon if policy allows)
-const supabase = createClient(supabaseUrl, supabaseServiceKey || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+const supabase = supabaseUrl ? createClient(supabaseUrl, supabaseServiceKey || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "") : null;
 
 const ROUTES = [
     { origin: 'LIS', destination: 'CDG' }, // Paris
@@ -34,6 +34,10 @@ const ROUTES = [
 ];
 
 export async function GET(request: Request) {
+    if (!supabase) {
+        return NextResponse.json({ error: "Missing Supabase configuration" }, { status: 500 });
+    }
+
     console.log('🔄 Cron: Starting Lightning Deal Hunter...');
 
     const updates = [];

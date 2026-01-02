@@ -109,10 +109,22 @@ export default function SearchContent() {
                 const query = new URLSearchParams(params);
                 console.log('🚀 Starting Search:', query.toString());
 
-                const res = await fetch(`/api/search?${query.toString()}`);
-                const data = await res.json();
+                const res = await fetch(`/api/search?${query.toString()}`, {
+                    signal: AbortSignal.timeout(20000) // Client-side timeout (20s) to stop spinner
+                });
 
-                if (!res.ok) throw new Error(data.error || 'Failed to search');
+                let data;
+                const contentType = res.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    data = await res.json();
+                } else {
+                    // Start of non-JSON response handling (e.g. 504 from Vercel)
+                    const text = await res.text();
+                    console.error('Non-JSON response:', text.substring(0, 100));
+                    throw new Error(`Server Error: ${res.status}`);
+                }
+
+                if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
 
                 // Case 1: Flexible Search (Synchronous)
                 if (data.flexible && data.priceCalendar) {
@@ -135,7 +147,18 @@ export default function SearchContent() {
                         if (!isMounted) return;
                         try {
                             const pollRes = await fetch(`/api/search?searchId=${data.searchId}`);
+
+                            // Check for HTTP errors (4xx, 5xx)
+                            if (!pollRes.ok) {
+                                throw new Error(`Erro no servidor: ${pollRes.status}`);
+                            }
+
                             const pollData = await pollRes.json();
+
+                            // Check for API-level errors in response body
+                            if (pollData.error) {
+                                throw new Error(pollData.error);
+                            }
 
                             if (pollData.data) {
                                 console.log(`📦 Polling Update: ${pollData.data.length} offers`);
@@ -153,8 +176,15 @@ export default function SearchContent() {
                                 if (isMounted) setLoading(false);
                                 clearInterval(pollInterval);
                             }
-                        } catch (e) {
+                        } catch (e: any) {
                             console.error('Polling error:', e);
+                            // Stop polling on error to avoid infinite loop
+                            clearInterval(pollInterval);
+                            setIsPolling(false);
+                            if (isMounted) {
+                                setLoading(false);
+                                setError(e.message || 'Falha na busca. Tente novamente.');
+                            }
                         }
                     };
 

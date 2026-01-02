@@ -4,7 +4,7 @@ import { generateSpeech } from "./speak";
 import Groq from "groq-sdk";
 
 const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY
+    apiKey: process.env.GROQ_API_KEY || "gsk_PLACEHOLDER_BUILD"
 });
 
 // Mock ambient sounds (In production, serve these from public/sounds or S3)

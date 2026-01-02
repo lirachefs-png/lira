@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { duffel } from '@/lib/duffel';
 
+export const maxDuration = 60; // Attempt to increase limit for Node runtime (if Vercel plan allows)
+
 // Helper: Add days to a date
 function addDays(dateStr: string, days: number): string {
     const date = new Date(dateStr);
@@ -50,7 +52,9 @@ export async function GET(request: Request) {
     const fareType = searchParams.get('fare_type');
     const privateFaresStr = searchParams.get('private_fares');
     const flexible = searchParams.get('flexible') === 'true';
-    const supplierTimeout = parseInt(searchParams.get('supplier_timeout') || '9000'); // Reduced to 9s to fit Vercel Hobby 10s limit
+    const supplierTimeout = parseInt(searchParams.get('supplier_timeout') || '8500'); // Reduced to 8.5s to safely fit Vercel 10s limit
+
+
 
     try {
         // Parse private fares if provided
@@ -91,9 +95,6 @@ export async function GET(request: Request) {
             }
         }
 
-        if (baseSlices.length === 0) {
-            return NextResponse.json({ error: 'Missing flight parameters' }, { status: 400 });
-        }
 
         // === POLLING MODE (Fetch results for existing search) ===
         const searchId = searchParams.get('searchId');
@@ -114,6 +115,10 @@ export async function GET(request: Request) {
                 meta: req.meta, // Contains 'after' cursor
                 complete: complete // Let frontend know if it should stop
             });
+        }
+
+        if (baseSlices.length === 0 && !searchId) {
+            return NextResponse.json({ error: 'Missing flight parameters' }, { status: 400 });
         }
 
         // === FLEXIBLE DATES MODE ===

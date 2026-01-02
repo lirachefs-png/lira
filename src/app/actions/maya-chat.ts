@@ -492,8 +492,10 @@ import { retrieveRelevantMemories, storeMemory } from "@/services/memory";
 export async function chatWithMaya(messages: ChatMessage[], userTimezone?: string) {
     try {
         if (!process.env.GROQ_API_KEY) {
+            console.error("❌ GROQ_API_KEY is missing in server environment!");
             return "**Maya (Offline):** Para ativar a Maya, configure a `GROQ_API_KEY` no seu ambiente.";
         }
+        console.log("✅ GROQ_API_KEY is present (starts with " + process.env.GROQ_API_KEY.substring(0, 4) + "...)");
 
         const lastUserMessage = messages.filter(m => m.role === 'user').pop();
 
