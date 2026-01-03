@@ -6,7 +6,7 @@ let extractor: FeatureExtractionPipeline | null = null;
 
 async function getExtractor(): Promise<FeatureExtractionPipeline> {
     if (!extractor) {
-        // @ts-expect-error - Pipeline overload types are too complex for TS
+        // @ts-ignore - Pipeline overload types are too complex for TS
         extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
     }
     return extractor;

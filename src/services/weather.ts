@@ -121,7 +121,15 @@ function getClothingSuggestion(temp: number, weatherCode: number): string {
 
 export type FetchWeatherResult = {
     current: WeatherData;
-    forecast: any[];
+    forecast: {
+        date: string;
+        tempMax: number;
+        tempMin: number;
+        weatherCode: number;
+        weatherDescription: string;
+        emoji: string;
+        precipitation: number;
+    }[];
 } | null;
 
 export async function getWeatherForCity(cityCodeOrName: string): Promise<FetchWeatherResult> {
@@ -137,7 +145,7 @@ export async function getWeatherForCity(cityCodeOrName: string): Promise<FetchWe
         locationName = cityCoordinates[city].name;
     } else {
         // Fallback: try to find by name within our list if a full name was passed (less reliable but useful)
-        const entry = Object.entries(cityCoordinates).find(([_, val]) =>
+        const entry = Object.entries(cityCoordinates).find(([, val]) =>
             val.name.toUpperCase() === city ||
             val.name.toUpperCase().includes(city)
         );

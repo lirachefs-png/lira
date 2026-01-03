@@ -65,6 +65,7 @@ export async function POST(request: Request) {
             born_on: p.born_on,
             email: p.email,
             phone_number: p.phone_number || '+351000000000',
+            identity_documents: p.identity_documents,
             // Link to Duffel Customer User for Assistant support
             ...(customerUserIds[index] && { customer_user_id: customerUserIds[index] })
         }));

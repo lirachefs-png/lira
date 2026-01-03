@@ -36,7 +36,7 @@ export async function getUnsplashImage(query: string): Promise<string | null> {
 
         const data = await res.json();
         return data.urls?.regular || fallbackImage;
-    } catch (error) {
+    } catch (_error) {
         console.warn('Unsplash API unavailable, using fallback image');
         return fallbackImage;
     }

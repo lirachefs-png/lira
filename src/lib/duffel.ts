@@ -36,6 +36,7 @@ export async function createBooking(offerId: string, passengerDetails?: any, ser
             gender: passengerDetails?.gender || "m",
             email: passengerDetails?.email,
             phone_number: passengerDetails?.phone || "+15550109999", // Duffel requires E.164
+            identity_documents: passengerDetails?.identity_documents,
             ...(passengerDetails?.hasLoyalty && passengerDetails?.loyaltyAirline && passengerDetails?.loyaltyNumber ? {
                 loyalty_programme_accounts: [{
                     airline_iata_code: passengerDetails.loyaltyAirline,
