@@ -32,20 +32,16 @@ export async function POST(request: Request) {
 
         const createCustomerUser = async (passenger: any) => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/duffel/customer-users`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        email: passenger.email,
-                        given_name: passenger.given_name,
-                        family_name: passenger.family_name,
-                        phone_number: passenger.phone_number
-                    })
+                // Direct Duffel SDK call instead of internal fetch to avoid ECONNREFUSED
+                const customer = await duffel.customers.create({
+                    email: passenger.email,
+                    given_name: passenger.given_name,
+                    family_name: passenger.family_name,
+                    phone_number: passenger.phone_number
                 });
-                const data = await res.json();
-                return data.id || null;
+                return customer.data.id;
             } catch (err) {
-                console.warn('Could not create customer user:', err);
+                console.warn('Could not create customer user (Duffel SDK):', err);
                 return null;
             }
         };

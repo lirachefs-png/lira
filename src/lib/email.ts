@@ -9,8 +9,8 @@ interface EmailPayload {
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.zoho.eu',
-    port: 465,
-    secure: true, // Use SSL
+    port: 587,
+    secure: false, // Use TLS
     auth: {
         user: process.env.ZOHO_EMAIL,
         pass: process.env.ZOHO_PASSWORD,

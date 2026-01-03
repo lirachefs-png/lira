@@ -3,8 +3,8 @@ import nodemailer from 'nodemailer';
 // Initialize Zoho SMTP transporter
 const transporter = nodemailer.createTransport({
     host: 'smtp.zoho.eu',
-    port: 465,
-    secure: true,
+    port: 587,
+    secure: false, // Use TLS
     auth: {
         user: process.env.ZOHO_EMAIL,
         pass: process.env.ZOHO_PASSWORD,

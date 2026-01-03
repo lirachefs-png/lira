@@ -22,8 +22,8 @@ export async function GET() {
         // 2. Configure Transporter (Exact same config as booking-email.ts)
         const transporter = nodemailer.createTransport({
             host: 'smtp.zoho.eu',
-            port: 465,
-            secure: true,
+            port: 587,
+            secure: false, // Use TLS
             auth: {
                 user: email,
                 pass: password,
