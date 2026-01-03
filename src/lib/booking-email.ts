@@ -1,21 +1,6 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-// Initialize Zoho SMTP transporter
-const transporter = nodemailer.createTransport({
-    host: 'smtp.zoho.eu',
-    port: 587,
-    secure: false, // Use TLS
-    auth: {
-        user: process.env.ZOHO_EMAIL,
-        pass: process.env.ZOHO_PASSWORD,
-    },
-    tls: {
-        // Fix for "self-signed certificate in certificate chain" error
-        rejectUnauthorized: false
-    },
-    // Force IPv4 as some cloud providers (Railway) have issues with IPv6 to external SMTP
-    family: 4,
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 interface BookingEmailData {
     to: string;
@@ -35,6 +20,8 @@ interface BookingEmailData {
 
 export async function sendBookingConfirmation(data: BookingEmailData) {
     const { to, passengerName, bookingReference, orderId, flightDetails, totalAmount, currency } = data;
+
+    const from = process.env.EMAIL_FROM || 'AllTrip <onboarding@resend.dev>';
 
     const emailHtml = `
 <!DOCTYPE html>
@@ -116,16 +103,21 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
     `;
 
     try {
-        const info = await transporter.sendMail({
-            from: `"AllTrip" <${process.env.ZOHO_EMAIL}>`,
-            to: to,
-            bcc: process.env.ZOHO_EMAIL, // Send copy to admin ("Prova Real")
+        const { data: emailData, error } = await resend.emails.send({
+            from: from,
+            to: [to],
+            bcc: [process.env.ADMIN_EMAIL || 'contato@alltripapp.com'], // Send copy to admin
             subject: `✈️ Reserva Confirmada - ${flightDetails.origin} → ${flightDetails.destination} | ${bookingReference}`,
             html: emailHtml,
         });
 
-        console.log('📧 Booking confirmation email sent:', info.messageId);
-        return { success: true, id: info.messageId };
+        if (error) {
+            console.error('❌ Resend API Error:', error);
+            return { success: false, error };
+        }
+
+        console.log('📧 Booking confirmation email sent:', emailData?.id);
+        return { success: true, id: emailData?.id };
     } catch (error) {
         console.error('❌ Failed to send booking email:', error);
         return { success: false, error };
