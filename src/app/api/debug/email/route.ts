@@ -31,6 +31,8 @@ export async function GET() {
             tls: {
                 rejectUnauthorized: false
             },
+            // Force IPv4 for Railway compatibility
+            family: 4,
             debug: true, // Enable debug logs
             logger: true // Enable logger
         });

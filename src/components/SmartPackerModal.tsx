@@ -3,8 +3,16 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Cloud, Sun, Umbrella, Thermometer, Battery, Shirt, Briefcase, FileText, Sparkles, Check, Loader2, Info } from 'lucide-react';
-import { getSmartPackingList, PackingList } from '@/app/actions/smart-packer';
+// import { getSmartPackingList, PackingList } from '@/app/actions/smart-packer';
 import { useRegion } from '@/contexts/RegionContext';
+// Mock types for UI stability
+interface PackingList {
+    clothing: string[];
+    toiletries: string[];
+    gadgets: string[];
+    documents: string[];
+    mayaTip: string;
+}
 
 interface SmartPackerModalProps {
     isOpen: boolean;
@@ -23,26 +31,11 @@ export default function SmartPackerModal({ isOpen, onClose, destination, origem,
     // Fetch data when modal opens
     useEffect(() => {
         if (isOpen) {
-            setLoading(true);
+            // Smart Packer Service is currently disabled
+            setLoading(false);
             setList(null);
-            setCheckedItems({});
-
-            // Calculate a fake "next week" return date for the demo if not provided, or logic
-            // For now, assume a 5 day trip starting from the booking date
-            const arrival = new Date(date).toISOString();
-            const departure = new Date(new Date(date).getTime() + 5 * 24 * 60 * 60 * 1000).toISOString();
-
-            getSmartPackingList(destination, arrival, departure)
-                .then((data) => {
-                    setList(data);
-                    setLoading(false);
-                })
-                .catch((err) => {
-                    console.error("Smart Packer Failed", err);
-                    setLoading(false);
-                });
         }
-    }, [isOpen, destination, date]);
+    }, [isOpen]);
 
     const toggleItem = (item: string) => {
         setCheckedItems(prev => ({ ...prev, [item]: !prev[item] }));
@@ -181,12 +174,8 @@ export default function SmartPackerModal({ isOpen, onClose, destination, origem,
                                     <p className="text-sm text-slate-400 mb-4">Não foi possível gerar a lista de bagagem. Verifique sua conexão e tente novamente.</p>
                                     <button
                                         onClick={() => {
-                                            setLoading(true);
-                                            const arrival = new Date(date).toISOString();
-                                            const departure = new Date(new Date(date).getTime() + 5 * 24 * 60 * 60 * 1000).toISOString();
-                                            getSmartPackingList(destination, arrival, departure)
-                                                .then((data) => { setList(data); setLoading(false); })
-                                                .catch(() => setLoading(false));
+                                            // Service disabled
+                                            setLoading(false);
                                         }}
                                         className="px-6 py-2 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-sm transition-colors"
                                     >

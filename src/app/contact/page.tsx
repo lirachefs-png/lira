@@ -55,23 +55,7 @@ export default function ContactPage() {
                             </div>
                         </div>
 
-                        {/* Maya Card */}
-                        <div className="bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 rounded-2xl p-8">
-                            <div className="flex items-start gap-4">
-                                <div className="p-3 bg-indigo-500/30 rounded-xl">
-                                    <MessageCircle className="w-6 h-6 text-indigo-400" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-bold text-white mb-1">{labels.contact.ask_maya}</h3>
-                                    <p className="text-gray-400 text-sm mb-3">
-                                        {labels.contact.maya_desc}
-                                    </p>
-                                    <span className="text-indigo-400 text-sm">
-                                        {labels.contact.maya_hint}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
 
                     {/* Disclaimer */}

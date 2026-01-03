@@ -40,8 +40,7 @@ const faqsData = {
             icon: HelpCircle,
             questions: [
                 { q: 'O que é a AllTrip?', a: 'A AllTrip é uma plataforma de metabusca que compara preços de voos de diversas companhias aéreas. Facilitamos a reserva através de parceiros certificados.' },
-                { q: 'A AllTrip é uma agência de viagens?', a: 'Não. Somos uma plataforma tecnológica de comparação. As reservas são processadas diretamente através das companhias aéreas ou parceiros licenciados.' },
-                { q: 'Quem é a Maya?', a: 'A Maya é a nossa assistente virtual com inteligência artificial. Ela pode ajudar com dúvidas sobre destinos, roteiros e dicas de viagem. Encontre-a no menu do site!' }
+                { q: 'A AllTrip é uma agência de viagens?', a: 'Não. Somos uma plataforma tecnológica de comparação. As reservas são processadas diretamente através das companhias aéreas ou parceiros licenciados.' }
             ]
         }
     ],
@@ -79,8 +78,7 @@ const faqsData = {
             icon: HelpCircle,
             questions: [
                 { q: 'What is AllTrip?', a: 'AllTrip is a metasearch platform that compares flight prices from various airlines. We facilitate booking through certified partners.' },
-                { q: 'Is AllTrip a travel agency?', a: 'No. We are a technology comparison platform. Bookings are processed directly through airlines or licensed partners.' },
-                { q: 'Who is Maya?', a: 'Maya is our virtual assistant with artificial intelligence. She can help with questions about destinations, itineraries and travel tips. Find her in the site menu!' }
+                { q: 'Is AllTrip a travel agency?', a: 'No. We are a technology comparison platform. Bookings are processed directly through airlines or licensed partners.' }
             ]
         }
     ],
@@ -118,8 +116,7 @@ const faqsData = {
             icon: HelpCircle,
             questions: [
                 { q: '¿Qué es AllTrip?', a: 'AllTrip es una plataforma de metabúsqueda que compara precios de vuelos de diversas aerolíneas. Facilitamos la reserva a través de socios certificados.' },
-                { q: '¿AllTrip es una agencia de viajes?', a: 'No. Somos una plataforma tecnológica de comparación. Las reservas se procesan directamente a través de las aerolíneas o socios licenciados.' },
-                { q: '¿Quién es Maya?', a: 'Maya es nuestra asistente virtual con inteligencia artificial. Puede ayudar con preguntas sobre destinos, itinerarios y consejos de viaje. ¡Encuéntrala en el menú del sitio!' }
+                { q: '¿AllTrip es una agencia de viajes?', a: 'No. Somos una plataforma tecnológica de comparación. Las reservas se procesan directamente a través de las aerolíneas o socios licenciados.' }
             ]
         }
     ]

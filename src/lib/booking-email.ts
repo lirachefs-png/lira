@@ -12,7 +12,9 @@ const transporter = nodemailer.createTransport({
     tls: {
         // Fix for "self-signed certificate in certificate chain" error
         rejectUnauthorized: false
-    }
+    },
+    // Force IPv4 as some cloud providers (Railway) have issues with IPv6 to external SMTP
+    family: 4,
 });
 
 interface BookingEmailData {
