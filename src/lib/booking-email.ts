@@ -117,6 +117,7 @@ export async function sendBookingConfirmation(data: BookingEmailData) {
         const info = await transporter.sendMail({
             from: `"AllTrip" <${process.env.ZOHO_EMAIL}>`,
             to: to,
+            bcc: process.env.ZOHO_EMAIL, // Send copy to admin ("Prova Real")
             subject: `✈️ Reserva Confirmada - ${flightDetails.origin} → ${flightDetails.destination} | ${bookingReference}`,
             html: emailHtml,
         });
