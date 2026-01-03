@@ -1,43 +1,23 @@
 'use client';
 
 import Link from "next/link";
-import { LogOut, User, Globe, Moon, Sun, Mic, Plane, Map, ChevronLeft, ChevronRight } from "lucide-react";
+import { Globe, Moon, Sun, Plane, Map, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { User as SupabaseUser } from "@supabase/supabase-js";
 import { useTheme } from "next-themes";
 import { useRegion } from "@/contexts/RegionContext";
 import { useSidebar } from "@/contexts/SidebarContext";
-import { cn } from "@/lib/utils"; // Ensure you have this utility or use template literals
+import { cn } from "@/lib/utils";
 
 export default function Sidebar() {
-    const [user, setUser] = useState<SupabaseUser | null>(null);
-    const supabase = createClient();
     const { theme, setTheme } = useTheme();
     const { language, currency, setLanguage, setCurrency, labels } = useRegion();
     const [showRegionMenu, setShowRegionMenu] = useState(false);
-
-    // Collapse State
     const { isCollapsed, toggleSidebar } = useSidebar();
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        const getUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            setUser(user);
-        };
-        getUser();
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
-        });
-
-        return () => subscription.unsubscribe();
+        setMounted(true);
     }, []);
-
-    const handleLogout = async () => {
-        await supabase.auth.signOut();
-        setUser(null);
-    };
 
     return (
         <aside
@@ -63,9 +43,6 @@ export default function Sidebar() {
                         </div>
                     ) : (
                         <div className="h-12 w-48 relative">
-                            {/* Logo logic: Show colored logo in white bg? Assuming logo-full works on white or we need a specific one. Let's assume standard full logo works or is dark text. */}
-                            {/* If the current logo-full.png is white text, we might need a dark-text version for light mode or invert it. */}
-                            {/* Assuming logo-full.png is suitable or needs brightness filter. */}
                             <img src="/logo-full.png" alt="AllTrip Logo" className="w-full h-full object-contain object-left dark:brightness-100 brightness-0" />
                         </div>
                     )}
@@ -99,20 +76,9 @@ export default function Sidebar() {
                         {!isCollapsed && <span>Guia de Viagens</span>}
                     </Link>
                 </div>
-
-                {/* Admin Links */}
-                {user?.email === 'lira.chefs@gmail.com' && (
-                    <div className="pt-4">
-                        {!isCollapsed && <div className="text-[10px] font-bold text-rose-500/50 px-4 mb-2 tracking-widest uppercase">Admin Zone</div>}
-
-                        <Link href="/admin" className={cn("flex items-center gap-3 px-4 py-2 text-sm text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 transition-colors", isCollapsed ? "justify-center" : "")}>
-                            {!isCollapsed ? "Dashboard" : "D"}
-                        </Link>
-                    </div>
-                )}
             </nav>
 
-            {/* Bottom Actions (User, Settings) */}
+            {/* Bottom Actions */}
             <div className="p-4 bg-slate-50 dark:bg-black/20 space-y-4 border-t border-slate-200 dark:border-none">
                 {/* Region Selector */}
                 <div className="relative">
@@ -154,46 +120,16 @@ export default function Sidebar() {
                 </div>
 
                 {/* Theme Toggle */}
-                <button
-                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                    className={cn("w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-sm",
-                        "text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5", isCollapsed ? "justify-center" : "")}
-                >
-                    {theme === 'dark' ? <Sun className="w-4 h-4 shrink-0" /> : <Moon className="w-4 h-4 shrink-0" />}
-                    {!isCollapsed && <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>}
-                </button>
-
-                {/* User Profile */}
-                <div className="pt-4 border-t border-slate-200 dark:border-white/5">
-                    {user ? (
-                        <div className={cn("flex items-center gap-3 p-2 rounded-xl transition-colors group cursor-pointer",
-                            "hover:bg-slate-100 dark:hover:bg-white/5",
-                            isCollapsed ? "justify-center" : "")}>
-                            {user.user_metadata.avatar_url ? (
-                                <img src={user.user_metadata.avatar_url} className="w-10 h-10 rounded-full border border-slate-200 dark:border-white/10 shrink-0" />
-                            ) : (
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-rose-500 to-orange-500 flex items-center justify-center font-bold text-white shadow-lg shrink-0">
-                                    {user.email?.[0].toUpperCase()}
-                                </div>
-                            )}
-                            {!isCollapsed && (
-                                <>
-                                    <div className="flex-1 overflow-hidden">
-                                        <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user.user_metadata.full_name || 'Viajante'}</p>
-                                        <p className="text-xs text-slate-500 dark:text-gray-500 truncate">{user.email}</p>
-                                    </div>
-                                    <button onClick={handleLogout} className="text-slate-400 dark:text-gray-500 hover:text-rose-500 transition-colors">
-                                        <LogOut className="w-5 h-5" />
-                                    </button>
-                                </>
-                            )}
-                        </div>
-                    ) : (
-                        <Link href="/auth/signin" className={cn("flex items-center justify-center gap-2 w-full py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-rose-900/20", isCollapsed ? "p-0 h-10 w-10" : "")}>
-                            <User className="w-4 h-4 shrink-0" /> {!isCollapsed && "Entrar"}
-                        </Link>
-                    )}
-                </div>
+                {mounted && (
+                    <button
+                        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                        className={cn("w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-colors text-sm",
+                            "text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5", isCollapsed ? "justify-center" : "")}
+                    >
+                        {theme === 'dark' ? <Sun className="w-4 h-4 shrink-0" /> : <Moon className="w-4 h-4 shrink-0" />}
+                        {!isCollapsed && <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>}
+                    </button>
+                )}
             </div>
         </aside>
     );

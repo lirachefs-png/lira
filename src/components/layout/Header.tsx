@@ -1,24 +1,16 @@
 'use client';
 
 import Link from "next/link";
-import { LogOut, User, Globe, Eye, EyeOff, Sun, Moon, Mic } from "lucide-react";
+import { Globe, Sun, Moon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { User as SupabaseUser } from "@supabase/supabase-js";
 import { useTheme } from "next-themes";
 import { useRegion } from "@/contexts/RegionContext";
 
-import { useAuth } from "@/components/auth/AuthProvider";
-
 export default function Header() {
     const [scrolled, setScrolled] = useState(false);
-    // Use global auth state instead of local
-    const { user, isLoading: authLoading } = useAuth();
-    const supabase = createClient();
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
 
-    // Auth Modal State - REMOVED (Moved to dedicated pages)
     const { language, currency, setLanguage, setCurrency, labels } = useRegion();
     const [showRegionMenu, setShowRegionMenu] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -34,10 +26,6 @@ export default function Header() {
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
-
-    const handleLogout = async () => {
-        await supabase.auth.signOut();
-    };
 
     return (
         <>
@@ -59,58 +47,21 @@ export default function Header() {
                         </span>
                     </Link>
 
-                    {/* CENTER: Pill Navigation - All Pills with Labels */}
+                    {/* CENTER: Pill Navigation */}
                     <nav className="hidden md:flex items-center gap-1 p-1.5 rounded-full bg-slate-100/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-md">
-                        {/* Voos - Fixed Width Pill */}
                         <Link href="/" className="w-[120px] text-center py-2 rounded-full text-sm font-medium text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-all hover:bg-white/50 dark:hover:bg-white/5">
                             {labels.flights}
                         </Link>
-
-                        {/* Éden AI - Highlighted Purple Pill */}
                         <Link href="/guide" className="w-[120px] text-center py-2 rounded-full text-sm font-medium bg-gradient-to-r from-purple-600 to-cyan-600 text-white hover:opacity-90 transition-all">
                             Guia
                         </Link>
-
-                        {/* Experiências - Fixed Width Pill */}
                         <Link href="/guide" className="w-[120px] text-center py-2 rounded-full text-sm font-medium text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-all hover:bg-white/50 dark:hover:bg-white/5">
                             {labels.experiences}
                         </Link>
                     </nav>
 
-                    {/* RIGHT: User Actions */}
+                    {/* RIGHT: Actions */}
                     <div className="flex items-center gap-4">
-                        {/* Admin Tools */}
-                        {(user?.email === 'lira.chefs@gmail.com' || user?.user_metadata?.email === 'lira.chefs@gmail.com') && (
-                            <div className="hidden lg:flex items-center gap-2">
-                                <Link href="/admin" className="px-3 py-1 bg-rose-100 dark:bg-rose-600/20 border border-rose-200 dark:border-rose-500/50 text-rose-600 dark:text-rose-500 text-[10px] font-bold tracking-wider rounded-md backdrop-blur-md hover:bg-rose-200 dark:hover:bg-rose-600/30 transition-colors">
-                                    ADMIN
-                                </Link>
-                            </div>
-                        )}
-
-                        {/* User Profile Pill */}
-                        {user ? (
-                            <Link href="/my-trips" className="hidden md:block">
-                                <div className={`flex items-center gap-3 border pl-1 pr-4 py-1 rounded-full shadow-sm transition-all cursor-pointer group ${scrolled ? 'bg-slate-100 dark:bg-white/10 border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/20' : 'bg-black/5 dark:bg-black/40 border-white/20 dark:border-white/10 hover:bg-black/10 dark:hover:bg-black/60 backdrop-blur-md'}`}>
-                                    {(user.user_metadata?.avatar_url || user.user_metadata?.picture) ? (
-                                        <img src={user.user_metadata.avatar_url || user.user_metadata.picture} alt="Profile" className="w-8 h-8 rounded-full shadow-inner object-cover" referrerPolicy="no-referrer" />
-                                    ) : (
-                                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-rose-500 to-orange-500 text-white flex items-center justify-center font-bold text-xs shadow-inner">
-                                            {user.email?.[0].toUpperCase()}
-                                        </div>
-                                    )}
-                                    <span className="text-sm font-bold text-slate-700 dark:text-gray-200 group-hover:text-slate-900 dark:group-hover:text-white">{labels.myAccount}</span>
-                                </div>
-                            </Link>
-                        ) : (
-                            <Link
-                                href="/auth/signin"
-                                className={`hidden md:flex items-center gap-2 border px-4 py-2 rounded-full shadow-sm transition-all cursor-pointer group ${scrolled ? 'bg-slate-100 dark:bg-white/10 border-slate-200 dark:border-white/10 hover:bg-slate-200 dark:hover:bg-white/20' : 'bg-black/5 dark:bg-black/40 border-white/20 dark:border-white/10 hover:bg-black/10 dark:hover:bg-black/60 backdrop-blur-md'}`}>
-                                <User className="w-4 h-4 text-slate-700 dark:text-white" />
-                                <span className="text-sm font-bold text-slate-700 dark:text-gray-200 group-hover:text-slate-900 dark:group-hover:text-white">{labels.login}</span>
-                            </Link>
-                        )}
-
                         {/* Theme Toggle */}
                         {mounted && (
                             <button
@@ -160,16 +111,6 @@ export default function Header() {
                                 </div>
                             )}
                         </div>
-
-                        {/* Logout */}
-                        {user && (
-                            <button
-                                onClick={handleLogout}
-                                className={`transition-colors p-2 rounded-full ${scrolled ? 'text-slate-400 hover:text-rose-500 hover:bg-rose-50' : 'text-gray-400 hover:text-white hover:bg-white/10'}`}
-                            >
-                                <LogOut className="w-5 h-5" />
-                            </button>
-                        )}
                     </div>
 
                     {/* Mobile Menu Toggle */}
@@ -201,11 +142,6 @@ export default function Header() {
                                 <Link href="/guide" className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400 flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
                                     <span>🌍</span> Guia de Viagens
                                 </Link>
-                                {user && (
-                                    <Link href="/my-trips" className="text-xl font-bold text-slate-500 dark:text-gray-400" onClick={() => setMobileMenuOpen(false)}>
-                                        Minhas Viagens
-                                    </Link>
-                                )}
                             </nav>
 
                             <div className="h-px bg-slate-200 dark:bg-white/10" />
@@ -238,32 +174,10 @@ export default function Header() {
                                     ))}
                                 </div>
                             </div>
-
-                            <div className="h-px bg-slate-200 dark:bg-white/10" />
-
-                            <div className="flex flex-col gap-4">
-                                {!user ? (
-                                    <Link
-                                        href="/auth/signin"
-                                        onClick={() => setMobileMenuOpen(false)}
-                                        className="w-full py-3 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black font-bold text-center"
-                                    >
-                                        {labels.login}
-                                    </Link>
-                                ) : (
-                                    <button
-                                        onClick={() => { setMobileMenuOpen(false); handleLogout(); }}
-                                        className="w-full py-3 rounded-xl border border-rose-500 text-rose-500 font-bold"
-                                    >
-                                        Sair
-                                    </button>
-                                )}
-                            </div>
                         </div>
                     </div>
                 )
             }
-
         </>
     );
 }

@@ -1,6 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
 
 export type BookingState = "processing" | "confirmed" | "failed";
+
+// Mock implementation since we removed Supabase
+// In a real app without Supabase, this would connect to another DB (Postgres, Prisma, etc.)
 
 export async function createBooking(
     sessionId: string,
@@ -11,21 +13,8 @@ export async function createBooking(
     passengerData: any = {},
     bookingReference: string | null = null
 ) {
-    const supabase = await createClient();
-    const result = await supabase.from("bookings").insert({
-        transaction_id: sessionId, // PaymentIntent ID or session ID
-        state: state,
-        user_email: userEmail,
-        amount_total: amount,
-        currency: currency,
-        passenger_data: passengerData,
-        booking_reference: bookingReference
-    });
-
-    if (result.error) {
-        console.error("❌ createBooking error:", result.error);
-    }
-    return result;
+    console.log("MOCK CREATE BOOKING", { sessionId, state, amount });
+    return { error: null, data: { id: 'mock-id' } };
 }
 
 export async function updateBooking(sessionId: string, data: {
@@ -33,48 +22,28 @@ export async function updateBooking(sessionId: string, data: {
     offerId?: string;
     bookingReference?: string;
     error?: string;
-    orderId?: string; // Duffel order ID
+    orderId?: string;
 }) {
-    const supabase = await createClient();
-    await supabase.from("bookings").update({
-        state: data.state,
-        offer_id: data.offerId,
-        booking_reference: data.bookingReference,
-        // error: data.error, // Add error column to DB if needed, currently not in SQL but useful
-    }).eq("transaction_id", sessionId);
+    console.log("MOCK UPDATE BOOKING", { sessionId, data });
+    return { error: null };
 }
 
 export async function getBooking(sessionId: string) {
-    const supabase = await createClient();
-    const { data } = await supabase.from("bookings").select("*").eq("transaction_id", sessionId).single();
-
-    if (!data) return null;
-
+    console.log("MOCK GET BOOKING", sessionId);
+    // Return a dummy booking so checkout completion flow doesn't crash
     return {
-        state: data.state as BookingState,
-        offerId: data.offer_id,
-        bookingReference: data.booking_reference,
-        updatedAt: new Date(data.created_at).getTime() // Approximation
+        state: 'confirmed' as BookingState,
+        offerId: 'mock-offer-id',
+        bookingReference: 'MOCK-REF',
+        updatedAt: Date.now()
     };
 }
 
 export async function getBookingsByUser(email: string) {
-    const supabase = await createClient();
-    const { data } = await supabase
-        .from("bookings")
-        .select("*")
-        .eq("user_email", email)
-        .order("created_at", { ascending: false });
-
-    return data || [];
+    console.log("MOCK GET BOOKINGS BY USER", email);
+    return [];
 }
 
 export async function getAllBookings() {
-    const supabase = await createClient();
-    const { data } = await supabase
-        .from("bookings")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-    return data || [];
+    return [];
 }

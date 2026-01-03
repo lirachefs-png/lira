@@ -1,8 +1,12 @@
-import { type NextRequest } from 'next/server'
-import { updateSession } from '@/lib/supabase/middleware'
+import { type NextRequest, NextResponse } from 'next/server'
 
 export async function proxy(request: NextRequest) {
-    return await updateSession(request)
+    // No-op proxy / middleware placeholder after removing Supabase
+    return NextResponse.next({
+        request: {
+            headers: request.headers,
+        },
+    });
 }
 
 export const config = {

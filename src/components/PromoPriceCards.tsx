@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Bell, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { getUnsplashImage } from '@/lib/unsplash';
 
 interface PromoDeal {
     id: number;
@@ -59,53 +58,8 @@ const DEALS: PromoDeal[] = [
 
 export default function PromoPriceCards() {
     const router = useRouter();
-    // const [images, setImages] = useState<Record<string, string>>({}); // Removed
-    const [dynamicDeals, setDynamicDeals] = useState(DEALS);
-    const [lastUpdated, setLastUpdated] = useState<string | null>(null);
-
-    useEffect(() => {
-        // Removed dynamic image fetching for stability
-
-        // 2. Fetch Cached Prices from Supabase
-        const fetchPrices = async () => {
-            try {
-                // We use the REST API via supabase-js or a simple fetch to our own API if we want to hide logic?
-                // Direct Supabase select is fine if table is Public Read.
-                const { createClient } = await import('@/lib/supabase/client');
-                const supabase = createClient();
-
-                const { data, error } = await supabase
-                    .from('flight_cache')
-                    .select('*');
-
-                if (data && data.length > 0) {
-                    const updatedDeals = DEALS.map(deal => {
-                        const cached = data.find((c: any) => c.destination === deal.destination && c.origin === deal.origin);
-                        if (cached) {
-                            return {
-                                ...deal,
-                                price: Math.round(cached.price),
-                                currency: cached.currency === 'EUR' ? '€' : cached.currency
-                            };
-                        }
-                        return deal;
-                    });
-                    setDynamicDeals(updatedDeals);
-
-                    // Set update date from the first record found
-                    if (data[0].updated_at) {
-                        setLastUpdated(new Date(data[0].updated_at).toLocaleDateString());
-                    }
-                }
-            } catch (err) {
-                console.error("Failed to fetch price cache:", err);
-            }
-        };
-        fetchPrices();
-
-    }, []);
-
-    const displayDeals = dynamicDeals; // Use state wrapper
+    // Use static deals since Supabase is removed
+    const [dynamicDeals] = useState(DEALS);
 
     return (
         <section className="relative z-20 py-12 px-4 max-w-7xl mx-auto">
@@ -116,11 +70,6 @@ export default function PromoPriceCards() {
                         Highlights
                     </h2>
                 </div>
-                {lastUpdated && (
-                    <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 dark:text-white/40">
-                        Atualizado: {lastUpdated}
-                    </span>
-                )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

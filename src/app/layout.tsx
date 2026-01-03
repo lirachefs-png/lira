@@ -51,8 +51,6 @@ import { RegionProvider } from "@/contexts/RegionContext";
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 
-import AuthProvider from "@/components/auth/AuthProvider";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -61,15 +59,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={clsx(outfit.className, "antialiased")}>
-        <AuthProvider>
-          <RegionProvider>
-            <ThemeProvider>
-              <Header />
-              {children}
-              <Footer />
-            </ThemeProvider>
-          </RegionProvider>
-        </AuthProvider>
+        <RegionProvider>
+          <ThemeProvider>
+            <Header />
+            {children}
+            <Footer />
+          </ThemeProvider>
+        </RegionProvider>
 
         {/* Duffel Assistant - Trip Management & Support Chat */}
         <Script
@@ -82,4 +78,3 @@ export default function RootLayout({
     </html>
   );
 }
-

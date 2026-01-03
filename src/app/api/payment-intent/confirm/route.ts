@@ -100,68 +100,12 @@ export async function POST(request: Request) {
         // Define primary passenger early for use in DB and Email
         const primaryPassenger = passengers[0];
 
-        // --- SAVE TO SUPABASE ---
+        // --- SAVE TO DATABASE (MOCK/REMOVED) ---
+        // Previously saved to Supabase. Now just logging.
         try {
-            const { createBooking, updateBooking } = await import('@/lib/bookingStore');
-            const { createClient } = await import('@/lib/supabase/server');
-
-            // Get the logged-in user's email from Supabase session (more reliable than form email)
-            const supabase = await createClient();
-            const { data: { user } } = await supabase.auth.getUser();
-            const loggedInUserEmail = user?.email || primaryPassenger?.email || undefined;
-
-            console.log("🔍 DEBUG - Booking Email Resolution:", {
-                loggedInUser: user?.email,
-                primaryPassengerEmail: primaryPassenger?.email,
-                finalEmail: loggedInUserEmail
-            });
-
-            // Stripe session.amount_total is integer cents. Duffel amount is string "100.00".
-            // Store as integer cents to be consistent with system.
-            const amountCents = Math.round(parseFloat(confirmedIntent.data.amount) * 100);
-
-            // Extract flight details from Duffel Order for My Trips display
-            const firstSlice = order.data.slices?.[0];
-            const firstSegment = firstSlice?.segments?.[0];
-            const lastSegment = firstSlice?.segments?.[firstSlice.segments.length - 1];
-
-            const flightDetails = {
-                origem: firstSegment?.origin?.iata_code || 'N/A',
-                destino: lastSegment?.destination?.iata_code || 'N/A',
-                airline: order.data.owner?.name || 'Airline',
-                departureDate: firstSegment?.departing_at?.split('T')[0] || 'N/A',
-            };
-
-            // Merge flight details with passenger data for storage
-            const enrichedPassengerData = {
-                ...flightDetails,
-                passengers: passengers
-            };
-
-            // 1. Create Initial Record with all data including booking_reference
-            await createBooking(
-                paymentIntentId, // Use PaymentIntent ID as the session/transaction ID
-                "confirmed",
-                loggedInUserEmail, // Use logged-in user email for "My Trips" matching
-                amountCents,
-                confirmedIntent.data.currency,
-                enrichedPassengerData, // Now includes origem, destino, airline
-                order.data.booking_reference // Pass booking reference directly
-            );
-
-            // Update is now optional but kept for backward compatibility
-            await updateBooking(paymentIntentId, {
-                state: "confirmed",
-                offerId: offerId,
-                bookingReference: order.data.booking_reference,
-                orderId: order.data.id
-            });
-
-            console.log("✅ Booking saved to Supabase (My Trips) for email:", loggedInUserEmail);
-
+            console.log("📝 Booking created (DB save skipped as Supabase is removed):", order.data.booking_reference);
         } catch (dbError) {
-            console.error("⚠️ Failed to save booking to Supabase:", dbError);
-            // Non-blocking
+            console.error("⚠️ Mock DB Error:", dbError);
         }
         // ------------------------------
 
