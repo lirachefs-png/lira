@@ -1,12 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Skip static generation for all pages - render on demand
-  // This fixes build errors when env vars aren't available during build
-  experimental: {
-    // PPR causes issues with env vars during build
-  },
-
   images: {
     remotePatterns: [
       {

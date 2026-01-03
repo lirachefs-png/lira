@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import AdminDashboardClient from "./AdminDashboardClient";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
     const supabase = await createClient();

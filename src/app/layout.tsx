@@ -4,9 +4,6 @@ import Script from "next/script";
 import "./globals.css";
 import { clsx } from "clsx";
 
-// Force all pages to be dynamic - prevents build errors when env vars aren't available
-export const dynamic = "force-dynamic";
-
 const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
