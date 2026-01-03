@@ -151,6 +151,23 @@ function SuccessContent() {
                     )}
                 </div>
 
+                {(status === 'confirmed' || status === 'hold_confirmed') && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                        className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl flex items-center gap-3 text-left"
+                    >
+                        <div className="bg-emerald-500/20 p-2 rounded-full">
+                            <Mail className="w-5 h-5 text-emerald-400" />
+                        </div>
+                        <div>
+                            <p className="text-sm font-bold text-emerald-100">Confirmação Enviada</p>
+                            <p className="text-xs text-emerald-500/80">Um email com os detalhes da reserva e os bilhetes foi enviado para você.</p>
+                        </div>
+                    </motion.div>
+                )}
+
                 <Link
                     href="/"
                     className={`block w-full py-4 rounded-xl font-bold transition-all ${status === 'confirmed' || status === 'hold_confirmed'
