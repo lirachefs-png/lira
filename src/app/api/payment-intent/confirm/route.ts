@@ -118,31 +118,36 @@ export async function POST(request: Request) {
         });
 
         if (primaryPassenger?.email) {
-            try {
-                // Extract flight details from the order or use passed data
-                const slice = order.data.slices?.[0];
-                const segment = slice?.segments?.[0];
+            // FIRE AND FORGET - Do not await to prevent blocking the checkout response
+            const emailPromise = async () => {
+                try {
+                    // Extract flight details from the order or use passed data
+                    const slice = order.data.slices?.[0];
+                    const segment = slice?.segments?.[0];
 
-                await sendBookingConfirmation({
-                    to: primaryPassenger.email,
-                    passengerName: `${primaryPassenger.given_name} ${primaryPassenger.family_name}`,
-                    bookingReference: order.data.booking_reference || 'N/A',
-                    orderId: order.data.id,
-                    flightDetails: flightDetails || {
-                        origin: segment?.origin?.iata_code || 'N/A',
-                        destination: segment?.destination?.iata_code || 'N/A',
-                        departureDate: segment?.departing_at?.split('T')[0] || 'N/A',
-                        departureTime: segment?.departing_at?.split('T')[1]?.substring(0, 5) || 'N/A',
-                        airline: order.data.owner?.name || 'Airline',
-                    },
-                    totalAmount: confirmedIntent.data.amount,
-                    currency: confirmedIntent.data.currency,
-                });
-                console.log('📧 Confirmation email sent to:', primaryPassenger.email);
-            } catch (emailError) {
-                console.error('Failed to send email (non-blocking):', emailError);
-                // Don't fail the order if email fails
-            }
+                    await sendBookingConfirmation({
+                        to: primaryPassenger.email,
+                        passengerName: `${primaryPassenger.given_name} ${primaryPassenger.family_name}`,
+                        bookingReference: order.data.booking_reference || 'N/A',
+                        orderId: order.data.id,
+                        flightDetails: flightDetails || {
+                            origin: segment?.origin?.iata_code || 'N/A',
+                            destination: segment?.destination?.iata_code || 'N/A',
+                            departureDate: segment?.departing_at?.split('T')[0] || 'N/A',
+                            departureTime: segment?.departing_at?.split('T')[1]?.substring(0, 5) || 'N/A',
+                            airline: order.data.owner?.name || 'Airline',
+                        },
+                        totalAmount: confirmedIntent.data.amount,
+                        currency: confirmedIntent.data.currency,
+                    });
+                    console.log('📧 Confirmation email sent to:', primaryPassenger.email);
+                } catch (emailError) {
+                    console.error('Failed to send email (background):', emailError);
+                }
+            };
+
+            // Execute without awaiting
+            emailPromise().catch(err => console.error("Email promise failed:", err));
         }
 
         return NextResponse.json({
